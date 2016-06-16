@@ -1,0 +1,59 @@
+﻿@model IEnumerable<BDictionary.UI.Models.Identity.ApplicationUser>
+
+@{
+    ViewBag.Title = "Users";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<div class="page-header"><h1>Users Administration</h1></div>
+<div class="row">
+    <div class="col-md-4">
+        @if (!Model.Any())
+        {
+
+        }
+        else
+        {
+            <div class="row">
+                <table class="table table-striped table-bordered" id="AdminTable">
+                    <thead class="thead-default">
+                        <tr>
+                            <th>
+                                <i class="ace-icon fa fa-user"></i> User Name
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model)
+                        {
+                            <tr>
+                                <td>@user.UserName</td>
+                                <td>
+                                    <div class="hidden-sm btn-group">
+                                        <a class="btn btn-xs btn-info" href="@Url.Action("Details", "UsersAdmin", new { id = user.Id })"><i class="glyphicon glyphicon-eye-open"></i></a>
+                                        <a class="btn btn-xs btn-info" href="@Url.Action("Edit", "UsersAdmin", new { id = user.Id })"><i class="glyphicon glyphicon-pencil"></i></a>
+                                        <a class="btn btn-xs btn-danger" href="@Url.Action("Delete", "UsersAdmin", new { id = user.Id })"><i class="glyphicon glyphicon-trash"></i></a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            
+        }
+    </div>
+</div>
+
+@*
+    @section breadcrumbs{
+        <ul class="breadcrumb">
+            <li>
+                <i class="ace-icon glyphicon glyphicon-home default-blue"></i>
+                <a href="@Url.Action("Index", "Home")">Home</a>
+            </li>
+            <li class="active">Users</li>
+        </ul><!-- .breadcrumb -->
+    }
+*@
+

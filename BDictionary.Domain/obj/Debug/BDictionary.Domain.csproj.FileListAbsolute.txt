@@ -1,0 +1,14 @@
+C:\Users\lubo.aleksandrov\Documents\Visual Studio 2015\Projects\BDictionary\BDictionary.Domain\bin\Debug\BDictionary.Domain.dll.config
+C:\Users\lubo.aleksandrov\Documents\Visual Studio 2015\Projects\BDictionary\BDictionary.Domain\bin\Debug\BDictionary.Domain.dll
+C:\Users\lubo.aleksandrov\Documents\Visual Studio 2015\Projects\BDictionary\BDictionary.Domain\bin\Debug\BDictionary.Domain.pdb
+C:\Users\lubo.aleksandrov\Documents\Visual Studio 2015\Projects\BDictionary\BDictionary.Domain\bin\Debug\EntityFramework.BulkInsert.dll
+C:\Users\lubo.aleksandrov\Documents\Visual Studio 2015\Projects\BDictionary\BDictionary.Domain\bin\Debug\EntityFramework.dll
+C:\Users\lubo.aleksandrov\Documents\Visual Studio 2015\Projects\BDictionary\BDictionary.Domain\bin\Debug\EntityFramework.MappingAPI.dll
+C:\Users\lubo.aleksandrov\Documents\Visual Studio 2015\Projects\BDictionary\BDictionary.Domain\bin\Debug\EntityFramework.SqlServer.dll
+C:\Users\lubo.aleksandrov\Documents\Visual Studio 2015\Projects\BDictionary\BDictionary.Domain\bin\Debug\EntityFramework.xml
+C:\Users\lubo.aleksandrov\Documents\Visual Studio 2015\Projects\BDictionary\BDictionary.Domain\bin\Debug\EntityFramework.BulkInsert.pdb
+C:\Users\lubo.aleksandrov\Documents\Visual Studio 2015\Projects\BDictionary\BDictionary.Domain\bin\Debug\EntityFramework.MappingAPI.pdb
+C:\Users\lubo.aleksandrov\Documents\Visual Studio 2015\Projects\BDictionary\BDictionary.Domain\bin\Debug\EntityFramework.SqlServer.xml
+C:\Users\lubo.aleksandrov\Documents\Visual Studio 2015\Projects\BDictionary\BDictionary.Domain\obj\Debug\BDictionary.Domain.csprojResolveAssemblyReference.cache
+C:\Users\lubo.aleksandrov\Documents\Visual Studio 2015\Projects\BDictionary\BDictionary.Domain\obj\Debug\BDictionary.Domain.dll
+C:\Users\lubo.aleksandrov\Documents\Visual Studio 2015\Projects\BDictionary\BDictionary.Domain\obj\Debug\BDictionary.Domain.pdb

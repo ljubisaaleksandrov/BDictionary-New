@@ -1,0 +1,33 @@
+﻿@using BDictionary.UI.Models.Categories
+@model IQuestionAnswerViewModelContainer
+
+<div class="form-horizontal ">
+    <h4>Question Category Answers</h4>
+    <hr />
+
+    <div class="form-group">
+        <div class="col-md-10">
+            @Html.Editor("New Answer", "", null, new { htmlAttributes = new { @id= "NewAnswer", @class = "form-control left" } })
+            <button id="AddAnswer" class="btn btn-info button-margin-left" onclick="qc.AddQuestionAnswer(event)"><span class="glyphicon glyphicon-plus"></span></button>
+        </div>
+    </div>
+    <div class="margin-default"></div>
+
+    @for (int i = 0; i < Model.QuestionAnswerViewModel.Count(); i++)
+    {
+        var answer = Model.QuestionAnswerViewModel[i];
+        <div class="form-group">
+            <div class="col-md-10">
+                @*<input type="text" class="form-control left" disabled="disabled" value=@Model.QuestionAnswerViewModel[i].Value />*@
+                @Html.EditorFor(model => answer.Value, new { htmlAttributes = new { @id = "NewAnswer", @class = "form-control left", @disabled = "disabled"} })
+                @if (!answer.IsPrimary)
+                {
+                    <button id="RemoveAnswer" class="btn btn-danger button-margin-left" onclick="qc.RemoveQuestionAnswer(event, '@answer.Value')"><span class="glyphicon glyphicon-trash"></span></button>
+                }
+                @Html.HiddenFor(model => Model.QuestionAnswerViewModel[i].Id)
+                @Html.HiddenFor(model => Model.QuestionAnswerViewModel[i].CategoryID)
+                @Html.HiddenFor(model => Model.QuestionAnswerViewModel[i].Value)
+            </div>
+        </div>
+    }
+</div>

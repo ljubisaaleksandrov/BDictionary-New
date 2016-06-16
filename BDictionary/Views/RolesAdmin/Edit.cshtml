@@ -1,0 +1,44 @@
+﻿@model BDictionary.UI.Models.Identity.RoleViewModel
+
+@{
+    ViewBag.Title = "Edit Role";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<div class="page-header"><h1>Edit Role</h1></div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="display-inline-block">
+                @using (Html.BeginForm("Edit", "RolesAdmin", FormMethod.Post, new { role = "form" }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(model => model.Id)
+                    <div class="widget-box">
+                        <div class="widget-header"><h4 class="widget-title">Edit role name</h4></div>
+                        <div class="widget-body">
+                            <div class="widget-main">
+                                @Html.TextBoxFor(m => m.Name, new { @class = "form-control left" })
+                                <button type="submit" class="btn btn-primary left">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="display-inline-block margin-default">
+                <a class="btn btn-primary" href="@Url.Action("Index", "RolesAdmin")"><span class="glyphicon glyphicon-backward"></span>&nbsp;&nbsp;Back To List</a>
+            </div>
+        </div>
+</div>
+@*
+    @section breadcrumbs{
+        <ul class="breadcrumb">
+            <li>
+                <i class="ace-icon glyphicon glyphicon-home default-blue"></i>
+                <a href="@Url.Action("Index", "Home")">Home</a>
+            </li>
+            <li><a href="@Url.Action("Index", "RolesAdmin")">Roles</a></li>
+            <li class="active">Edit</li>
+        </ul><!-- .breadcrumb -->
+    }
+*@
+
+

@@ -1,0 +1,45 @@
+﻿@model Microsoft.AspNet.Identity.EntityFramework.IdentityRole
+
+@{
+    ViewBag.Title = "Delete Role";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<div class="row">
+    <div class="col-xs-12">
+        <div class="row">
+            <div class="col-md-3">
+                @using (Html.BeginForm("Delete", "RolesAdmin", FormMethod.Post, new { role = "form" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="widget-box widget-color-orange">
+                        <div class="widget-header"><h4 class="widget-title">Delete <b><em>@Model.Name</em></b> role</h4></div>
+                        <div class="widget-body">
+                            <div class="widget-main">
+                                <div class="alert alert-info">
+                                    <p>Are you sure you want to delete this Role? </p>
+                                    <p>Deleting this Role will remove all users from this role. It will not delete the users.</p>
+                                </div>
+                                <div class="widget-toolbox padding-8 clearfix">
+                                    <a class="btn btn-primary" href="@Url.Action("Index", "RolesAdmin")"> No</a>
+                                    <button type="submit" class="btn btn-danger">Yes</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>
+@*
+    @section breadcrumbs{
+        <ul class="breadcrumb">
+            <li>
+                <i class="ace-icon glyphicon glyphicon-home default-blue"></i>
+                <a href="@Url.Action("Index", "Home")">Home</a>
+            </li>
+            <li class="active">Roles</li>
+        </ul><!-- .breadcrumb -->
+    }
+*@

@@ -1,0 +1,143 @@
+﻿@using BDictionary.UI.Models.Identity
+@model UserDetailsViewModel
+
+@{
+    ViewBag.Title = "User Details";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<div class="page-header"><h1>User Profile</h1></div>
+<div class="row">
+    <div class="col-xs-6">
+        <div class="row">
+            <div class="col-xs-12 user-profile">
+                <div class="profile-user-info">
+                    <div class="profile-info-row">
+                        <div class="profile-info-name">Display Name</div>
+                        <div class="profile-info-value"><span>@Model.User.UserName</span></div>
+                    </div>
+                    <div class="profile-info-row">
+                        <div class="profile-info-name">Email</div>
+                        <div class="profile-info-value"><span>@Model.User.Email</span></div>
+                    </div>
+                    <div class="profile-info-row">
+                        <div class="profile-info-name">Email Confirmed</div>
+                        <div class="profile-info-value">
+                            @if(@Model.User.EmailConfirmed)
+                            {
+                                <span class="glyphicon glyphicon-ok right-icon-small"></span>
+                            }
+                            else
+                            {
+                                <span class="glyphicon glyphicon-remove wrong-icon-small"></span>
+                            }
+                        </div>
+                    </div>
+                    <div class="profile-info-row">
+                        <div class="profile-info-name">Logins</div>
+                        <div class="profile-info-value">
+                            @foreach (var login in Model.User.Logins)
+                            {
+                                <span class="label label-info">@login.LoginProvider</span>
+                            }
+                        </div>
+                    </div>
+                    <div class="profile-info-row">
+                        <div class="profile-info-name">Two factor</div>
+                        <div class="profile-info-value">
+                            @if (@Model.User.TwoFactorEnabled)
+                            {
+                                <span class="label label-success">Enabled</span>
+                            }
+                            else
+                            {
+                                <span class="label label-danger">Not Enabled</span>
+                            }
+                        </div>
+                    </div>
+                    <div class="profile-info-row">
+                        <div class="profile-info-name">Phone Number</div>
+                        <div class="profile-info-value">
+                            @if (string.IsNullOrEmpty(@Model.User.PhoneNumber))
+                            {
+                                <span>User has not provided phone number</span>
+                            }
+                            else
+                            {
+                                <span class="label label-inverse">@Model.User.PhoneNumber</span>
+                            }
+                        </div>
+                    </div>
+                    @if (!string.IsNullOrEmpty(Model.User.PhoneNumber))
+                    {
+                        <div class="profile-info-row">
+                            <div class="profile-info-name">Phone number confirmed</div>
+                            <div class="profile-info-value">
+                                @if (@Model.User.PhoneNumberConfirmed)
+                                {
+                                    <span class="label label-success">Yes</span>
+                                }
+                                else
+                                {
+                                    <span class="label label-danger">No</span>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+                <hr />
+                <div>
+                    <h4><span class="glyphicon glyphicon-education"></span> Assigned Roles</h4>
+                    @if (ViewBag.RoleNames.Count == 0)
+                    {
+                        <p>No roles found for this user.</p>
+                    }
+                    <ul class="list-unstyled">
+                        @foreach (var item in ViewBag.RoleNames)
+                        {
+                            <li><i class="glyphicon glyphicon-menu-right"></i>&nbsp;&nbsp;@item</li>
+                        }
+                    </ul>
+                </div>
+                <hr />
+                <div class="profile-user-info margin-default">
+                    @if (Model.Lockout.Status == LockoutStatus.Locked)
+                    {
+                        using (Html.BeginForm("Unlock", "UsersAdmin", FormMethod.Post, new { role = "form", @class = "form-horizontal" }))
+                        {
+                            @Html.Hidden("id", Model.User.Id)
+                            <i class="ace-icon fa fa-lock bigger-120"></i>
+                            <b>Account is locked</b>
+                            <button class="btn btn-sm btn-primary" type="submit"><i class="fa fa-unlock"></i> Unlock it!</button>
+                        }
+                    }
+                    else
+                    {
+                        using (Html.BeginForm("Lock", "UsersAdmin", FormMethod.Post, new { role = "form", @class = "form-horizontal" }))
+                        {
+                            @Html.Hidden("id", Model.User.Id)
+                            <i class="ace-icon fa fa-unlock bigger-120"></i>
+                            <b>Account is not locked</b>
+                            <button class="btn btn-sm btn-primary" type="submit"><i class="fa fa-lock"></i> Lock it!</button>
+                        }
+                    }
+                </div>
+                <div class="margin-default">
+                    <a class="btn btn-primary" href="@Url.Action("Index", "UsersAdmin")"><span class="glyphicon glyphicon-backward"></span>&nbsp;&nbsp;Back To List</a>
+                    <a class="btn btn-primary" href="@Url.Action("Edit", "UsersAdmin", new{id=Model.User.Id})"><i class="ace-icon fa fa-pencil align-top bigger-125"></i> Edit</a> 
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*
+    @section breadcrumbs{
+        <ul class="breadcrumb">
+            <li>
+                <i class="ace-icon glyphicon glyphicon-home default-blue"></i>
+                <a href="@Url.Action("Index", "Home")">Home</a>
+            </li>
+            <li><a href="@Url.Action("Index", "UsersAdmin")"><i class="ace-icon fa fa-users"></i> Users</a></li>
+            <li class="active">@Model.User.UserName</li>
+        </ul><!-- .breadcrumb -->
+    }
+*@

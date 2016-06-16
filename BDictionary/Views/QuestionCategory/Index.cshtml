@@ -1,0 +1,58 @@
+﻿@using BDictionary.UI.Models.Categories
+@model QuestionCategoriesViewModelContainer
+@{
+    ViewBag.Title = "Question Categories";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Question Categories</h2>
+<hr />
+
+@using (Html.BeginForm())
+{
+    <div class="col-md-12">
+        <div class="existing-catogories">
+            <h4>Search Existing Question Categories</h4>
+            <hr />
+            <div class="form-group @(Model.QuestionCategoryTreeViewModel.CategoryError ? "has-error" : string.Empty)">
+                @Html.Label("Category", htmlAttributes: new { @class = "control-label col-md-2" })
+                <input type="text" id="categoryName" class="form-control textareaExpand make-typeahead-categories" autocomplete="off" data_val="true" data_val_required="The field is required." value="@(Model.QuestionCategoryTreeViewModel.SelectedCategoryName)">
+                @Html.HiddenFor(model => model.QuestionCategoryTreeViewModel.SelectedCategoryId, new { @id = "categoryId" })
+                <div class="selected-category-options">
+                    <button class="btn btn-success" onclick="qc.EditQuestionCategory(event)"><span class="glyphicon glyphicon-pencil"></span></button>
+                    <button class="btn btn-danger" onclick="qc.RemoveQuestionCategory(event)"><span class="glyphicon glyphicon-trash"></span></button>
+                </div>
+            </div>
+
+            <div class="category-tree-column-left">
+                <div id="treeCell">
+
+                </div>
+            </div>
+        </div>
+        <div class="new-category" id="CategoryPartial">
+            @Html.Partial("QuestionCategoryEdit", Model)
+        </div>
+        <div class="new-answer">
+            @Html.Partial("QuestionAnswerEdit", Model)
+            <input id="QuestionAnswerHelper_AnswerToRemove" name="QuestionAnswerHelper.AnswerToRemove" type="hidden" value="">
+            <input id="QuestionAnswerHelper_AnswerToAdd" name="QuestionAnswerHelper.AnswerToAdd" type="hidden" value="">
+        </div>
+    </div>
+}
+
+
+
+
+
+@using (Html.BeginScripts())
+{
+    <script src="~/Scripts/Custom/QuestionCategoriesTree.js"></script>
+    <script src="~/Scripts/Custom/QuestionCategory.js"></script>
+    <script>
+        var ct = new InventoryStaiton.QuestionCategoryTree();
+        ct.init();
+        var qc = new InventoryStaiton.QuestionCategory();
+        qc.init();
+    </script>
+}

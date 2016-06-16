@@ -1,0 +1,63 @@
+﻿    @model BDictionary.UI.Models.Categories.IQuestionCategoryViewModelContainer
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        @if (Model.QuestionCategoryViewModel.Id != 0)
+        {
+            <h4>Edit Question Category</h4>
+        }
+        else
+        {
+            <h4>Add new Question Category</h4>
+        }
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.QuestionCategoryViewModel.Id)
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.QuestionCategoryViewModel.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.QuestionCategoryViewModel.Name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.QuestionCategoryViewModel.Name, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.QuestionCategoryViewModel.Parent, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.QuestionCategoryViewModel.Parent, new { htmlAttributes = new { @class = "form-control left", @disabled = "disabled" } })
+                @Html.ValidationMessageFor(model => model.QuestionCategoryViewModel.Parent, "", new { @class = "text-danger" })
+                <button class="btn btn-info button-margin-left" id="AddAsParentQC"><span class="glyphicon glyphicon-backward"></span>&nbsp; Add Parent</button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-2"></div>
+            <div class="col-md-10">
+                @Html.HiddenFor(model => model.QuestionCategoryViewModel.QuestionAnswerType)
+                <a href="#" onclick="qc.SelectAnswerType('Text')" class="question-answer-type"><img src="~/Content/Images/letter-icon-white-black.bmp" id="TextAnswerType"/></a>
+                <a href="#" onclick="qc.SelectAnswerType('Number')"  class="question-answer-type"><img src="~/Content/Images/number-icon-white-black.bmp" id="NumberAnswerType"/></a>
+            </div>
+        </div>
+
+        <div class="form-group margin-double">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="button" value="Save" onclick="qc.SaveCategory(event)" class="btn btn-primary" />
+                <input type="button" value="Clear"  onclick="qc.CancelEditing(event)" class="btn btn-primary" />
+                <span class="question-category-error"></span>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- @using (Html.BeginScripts())
+{
+    <script src="~/Scripts/Custom/QuestionCategory.js"></script>
+    <script>
+        var qc = new InventoryStaiton.QuestionCategory();
+        qc.init();
+    </script>
+} -->

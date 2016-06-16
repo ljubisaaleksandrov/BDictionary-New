@@ -1,0 +1,5 @@
+C:\Users\lubo.aleksandrov\Documents\Visual Studio 2015\Projects\BDictionary\BDictionary.Database\bin\Debug\BDictionary.Database.dacpac
+C:\Users\lubo.aleksandrov\Documents\Visual Studio 2015\Projects\BDictionary\BDictionary.Database\bin\Debug\BDictionary.Database.dll
+C:\Users\lubo.aleksandrov\Documents\Visual Studio 2015\Projects\BDictionary\BDictionary.Database\bin\Debug\BDictionary.Database.pdb
+C:\Users\lubo.aleksandrov\Documents\Visual Studio 2015\Projects\BDictionary\BDictionary.Database\obj\Debug\BDictionary.Database.dll
+C:\Users\lubo.aleksandrov\Documents\Visual Studio 2015\Projects\BDictionary\BDictionary.Database\obj\Debug\BDictionary.Database.pdb

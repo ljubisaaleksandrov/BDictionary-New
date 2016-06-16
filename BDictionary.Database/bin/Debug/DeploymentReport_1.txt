@@ -1,0 +1,22 @@
+﻿** Highlights
+     Tables that will be rebuilt
+       None
+     Clustered indexes that will be dropped
+       None
+     Clustered indexes that will be created
+       None
+     Possible data issues
+       None
+
+** User actions
+     Create
+       [dbo].[Question] (Table)
+       [dbo].[QuestionAnswer] (Table)
+       [dbo].[QuestionAnswerValueType] (Table)
+       [dbo].[QuestionCategory] (Table)
+       [dbo].[FK_Question_Answer] (Foreign Key)
+       [dbo].[FK_Question_QuestionCategory] (Foreign Key)
+       [dbo].[FK_QuestionAnswer_QuestionCategory] (Foreign Key)
+       [dbo].[FK_QuestionAnswer_QuestionAnswerValueType] (Foreign Key)
+
+** Supporting actions

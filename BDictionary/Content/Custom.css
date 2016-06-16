@@ -1,0 +1,63 @@
+﻿/*#region Global*/
+
+.display-inline             { display:inline-block; }
+.form-control-align         { display: inline-block;}
+.form-control-align > table { margin: 6px 12px }
+.right                      { float:right !important; }
+.left                       { float:left !important; }
+.middle                     { vertical-align:middle; display: table-cell; text-align: center}
+
+#treeCell                   { max-height:500px; overflow-y:auto; }
+.jstree-clicked             { background: #beebff; border-radius: 2px; box-shadow: inset 0 0 1px #999999; }
+.overflow-ellipsis          { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.simple-label               { font-weight: normal !important }
+::-webkit-input-placeholder { font-style: italic; }
+:-moz-placeholder           { font-style: italic; }
+::-moz-placeholder          { font-style: italic; }
+:-ms-input-placeholder      { font-style: italic; }
+.default-blue               { color: #337ab7 !important; }
+
+.form-group                 { margin-bottom: 1px; }
+.fields-group-container     { padding: 8px; padding-left:2px !important; margin-bottom: 5px; border-radius: 10px; }
+.form-control[disabled]     { background-color: #f6f6f6 !important }
+
+
+/*#endregion Global*/
+
+/*#region Catogories*/
+.existing-catogories        { width: 550px; float: left; }
+.selected-category-options  { float: right; width: 170px; height: 50px; margin-top: -34px; }
+
+.new-category               { width: 600px; height:400px; float: left; background-color: #f3f6ff}
+.new-category > div > h4    { margin-left: 20px}
+.button-margin-left         { margin-left: 5px }
+.question-answer-type:hover { }
+.question-answer-type > img         { margin-top: 10px; width: 45px; border: 1px solid #f3f6ff; border-radius: 5px}
+.question-answer-type > img:hover   { border: 1px solid #999 }
+.question-category-error    { color: #a94442; display: block; margin-top: 10px }
+
+.new-answer                 { width: 500px; height:400px; float: left; background-color: #f3f6ff }
+
+/*#endregion*/
+
+/*#region Identity */
+
+#AdminTable,
+.margin-default         { margin-top: 15px }
+.margin-double          { margin-top: 30px }
+.btn-xs                 { margin-right: 2px }
+.widget-main > button   { margin-left: 5px; }
+.thead-default th       { color: #55595c; background-color: #eceeef; }
+.profile-info-row       { width: 100%; display: inline-block }
+.profile-info-name      { width: 150px; float: left }
+.list-unstyled          { margin-left: 10px; font-size: 15px }
+.right-icon-small       { color: blue; font-weight: bold }
+.wrong-icon-small       { color: red; font-weight: bold }
+.control-group          { margin-left: 10px }
+.remember-me            { padding-left: 10px !important; }
+.forgot-password        { margin-left: 20px !important; }
+.admin-action           { background-color: #036 !important; }
+.admin-nav-separator    { height:20px; width: 100px }
+
+/*#endregion Identity*/
+
