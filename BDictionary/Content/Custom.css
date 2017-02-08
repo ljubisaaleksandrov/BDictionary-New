@@ -1,5 +1,7 @@
 ﻿/*#region Global*/
 
+/*.navbar-inverse             { border: none !important; background-color: white !important}*/
+
 .display-inline             { display:inline-block; }
 .form-control-align         { display: inline-block;}
 .form-control-align > table { margin: 6px 12px }
@@ -21,22 +23,39 @@
 .fields-group-container     { padding: 8px; padding-left:2px !important; margin-bottom: 5px; border-radius: 10px; }
 .form-control[disabled]     { background-color: #f6f6f6 !important }
 
+.items-per-page             { display: flex; }
+.items-per-page select      { width:60px; padding: 6px }
+.items-per-page b,
+.items-per-page span        { padding: 6px; }
 
 /*#endregion Global*/
 
 /*#region Catogories*/
-.existing-catogories        { width: 550px; float: left; }
-.selected-category-options  { float: right; width: 170px; height: 50px; margin-top: -34px; }
+.existing-categories            { width: 550px; height: 450px; float: left; background-color: #f6ffe9; }
+.selected-category-options      { float: right; width: 170px; height: 50px; margin-top: -34px; display: none; }
+.category-selected              { display: none }
 
-.new-category               { width: 600px; height:400px; float: left; background-color: #f3f6ff}
-.new-category > div > h4    { margin-left: 20px}
-.button-margin-left         { margin-left: 5px }
-.question-answer-type:hover { }
+.new-category                   { width: 600px; height: 450px; float: left; background-color: #f3f6ff}
+.new-category > div > h4        { margin-left: 20px}
+.button-margin-left             { margin-left: 5px }
+.question-answer-type:hover     { }
 .question-answer-type > img         { margin-top: 10px; width: 45px; border: 1px solid #f3f6ff; border-radius: 5px}
 .question-answer-type > img:hover   { border: 1px solid #999 }
-.question-category-error    { color: #a94442; display: block; margin-top: 10px }
+.question-type > img                { width: 36px; border: 1px solid #f3f6ff; border-radius: 5px}
+.question-type > img:hover          { border: 1px solid #999 }
+.question-category-error        { color: #a94442; display: block; margin-top: 10px }
+.category-question-answers      { height: 310px; width: 420px; overflow-x: hidden; }
+.new-answer                     { width: 500px; height: 450px; float: left; background-color: #f3f6ff }
 
-.new-answer                 { width: 500px; height:400px; float: left; background-color: #f3f6ff }
+.category-questions             { height: 310px; width: 100%; overflow-x: hidden; }
+.new-question                   { width: 100%; height: 450px; float: left; padding: 0px 10px }
+
+/*#endregion*/
+
+/*#region PagedList*/
+
+.listing-page-view-btn      { width: 60px; padding: 4px !important; }
+.listing-page-view-btn > a  { padding: 3px 12px !important; }
 
 /*#endregion*/
 
@@ -61,3 +80,36 @@
 
 /*#endregion Identity*/
 
+/*#region Maps*/
+
+.map-section-container      { width:100%; margin: 20px 0px !important; }
+#map                        { width: 590px; height: 630px; margin: auto; background-color: #fff !important }
+.region-description         { width: 0px; height: 630px; float:right; border-bottom: 2px solid #0084ff; opacity: 0 }
+.region-description-header  { width: 100%; height: 40px; background-color: #0084ff; color: white; font-size: 22px; padding: 6px 10px; }
+.region-description-content { width: 100%; font-size: 16px; text-align: justify; padding: 6px; overflow-y: auto; color: #000055; }
+
+/*endregion*/
+
+/*#region Regions */
+
+.regions-table                  { display: inline-block; margin-top: 20px; }
+.regions-table > thead          { background-color: #e0e9f9; }
+.regions-table-name             { width: 9%; font-weight: bold; }
+.regions-table-description      { width: 89%; }
+
+.regions-back-to-list-button    { display:inline-block; margin-top: 50px; }
+
+#saveRegion,
+#newRegion                      { margin: 15px; }
+
+#saveRegion,
+#applaySearch,
+#newWord,
+#newQustion,
+#editRegion                     { padding: 4px 10px; padding-top: 6px; font-size: 20px; }
+
+#applaySearch,
+#newQustion,
+#newWord                        { margin-left: 5px; margin-bottom: 5px; margin-top: -1px; }
+
+/*#endregion*/

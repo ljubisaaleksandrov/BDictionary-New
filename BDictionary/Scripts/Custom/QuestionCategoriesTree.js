@@ -10,15 +10,14 @@ InventoryStaiton.QuestionCategoryTree = function () {
         $.each(selectedItems, function () {
             $(this).removeClass('jstree-clicked').parent().attr('aria-selected', false);;
         });
-        that.categoryPostBack(id, name);
     }
 
     this.categoryPostBack = function (id, name) {
-        //$('#categoryId').val(id);
-        //$('#categoryName').val(name);
-        //$('#CategoryTreeViewModel_SelectedCategoryName').val(name);
-        var $form = $('#categoryId').parents('form');
-        $form.attr('action', '/Kit/SelectCategory');
+        $('#SelectedCategoryId').val(id);
+        $('#SelectedCategoryName').val(name);
+
+        var $form = $('#SelectedCategoryId').parents('form');
+        $form.attr('action', '/QuestionCategory/SelectCategory');
         $form[0].submit();
     }
 
@@ -50,13 +49,7 @@ InventoryStaiton.QuestionCategoryTree = function () {
         }).on('changed.jstree', function (e, data) {
             var node = data.instance.get_node(data.selected[0]);
             if (node.original != null) {
-                if (!node.original.isLeaf) {
-                    if (node.original.id != $('#categoryId').val()) {
-                        $('.loading-animation').css('display', 'block');
-                        that.changeNodeSelection(node.original.id, node.original.text, "suggestedCategories");
-                    }
-                }
-                else {
+                if (node.original.isLeaf){
                     var nodeSelector = "#" + node.original.id;
                     if ($(nodeSelector).hasClass('jstree-open')) {
                         $("#treeCell").jstree("close_node", $("#" + node.original.id));
@@ -64,6 +57,21 @@ InventoryStaiton.QuestionCategoryTree = function () {
                     else {
                         $("#treeCell").jstree("open_node", $("#" + node.original.id));
                     }
+                }
+
+                if (node.original.id != $('#SelectedCategoryId').val()) {
+                    //$('.loading-animation').css('display', 'block');
+
+                    var scopeIndex = node.original.text.indexOf('(') - 1;
+                    var categoryName = node.original.text.substring(0, scopeIndex);
+                    
+                    $("#SelectedCategoryName").val(categoryName);
+                    $("#SelectedCategoryId").val(node.original.id);
+                    $("#AddAsParentQC").css({ "display": "inline" });
+                    $(".selected-category-options").css({ "display": "block" });
+                    $(".selected-category-options").attr('id', node.original.id);
+
+                    //that.categoryPostBack(node.original.id, node.original.name);
                 }
             }
         });

@@ -1,0 +1,20 @@
+﻿** Highlights
+     Tables that will be rebuilt
+       None
+     Clustered indexes that will be dropped
+       None
+     Clustered indexes that will be created
+       None
+     Possible data issues
+       None
+
+** User actions
+     Create
+       [dbo].[Synonym] (Table)
+       [dbo].[Word] (Table)
+       [dbo].[WordType] (Table)
+       [dbo].[FK_Word_FirstSynonym] (Foreign Key)
+       [dbo].[FK_Word_SecondSynonym] (Foreign Key)
+       [dbo].[FK_Word_WordType] (Foreign Key)
+
+** Supporting actions

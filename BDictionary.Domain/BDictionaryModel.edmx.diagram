@@ -4,21 +4,32 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="c507bbc52c0e4815bbcb1541f08197d3" Name="Diagram1">
-        <EntityTypeShape EntityType="BDictionaryModel.AspNetRole" Width="1.5" PointX="5.75" PointY="8.5" />
-        <EntityTypeShape EntityType="BDictionaryModel.AspNetUserClaim" Width="1.5" PointX="10.25" PointY="7" />
-        <EntityTypeShape EntityType="BDictionaryModel.AspNetUserLogin" Width="1.5" PointX="10.25" PointY="9.75" />
-        <EntityTypeShape EntityType="BDictionaryModel.AspNetUser" Width="1.5" PointX="8" PointY="7.375" />
-        <EntityTypeShape EntityType="BDictionaryModel.Question" Width="1.5" PointX="5.25" PointY="3.75" />
-        <EntityTypeShape EntityType="BDictionaryModel.QuestionAnswer" Width="1.5" PointX="3" PointY="5.5" />
-        <EntityTypeShape EntityType="BDictionaryModel.QuestionCategory" Width="1.5" PointX="0.75" PointY="2.25" />
-        <AssociationConnector Association="BDictionaryModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" />
-        <AssociationConnector Association="BDictionaryModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" />
-        <AssociationConnector Association="BDictionaryModel.FK_Question_Answer" />
-        <AssociationConnector Association="BDictionaryModel.FK_Question_QuestionCategory" />
-        <AssociationConnector Association="BDictionaryModel.FK_QuestionAnswer_QuestionCategory" />
-        <AssociationConnector Association="BDictionaryModel.FK_QuestionCategory_ParentQuestionCategory" />
-        <AssociationConnector Association="BDictionaryModel.AspNetUserRoles" />
+      <Diagram DiagramId="63eb727586da4a0fa4a44225443ffd13" Name="Diagram1">
+        <EntityTypeShape EntityType="BDictionaryModel.C__RefactorLog" Width="1.5" PointX="0.75" PointY="11.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BDictionaryModel.AspNetRole" Width="1.5" PointX="3" PointY="5.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="BDictionaryModel.AspNetUserClaim" Width="1.5" PointX="7.5" PointY="10.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="BDictionaryModel.AspNetUserLogin" Width="1.5" PointX="7.5" PointY="13.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="BDictionaryModel.AspNetUser" Width="1.5" PointX="5.25" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BDictionaryModel.Question" Width="1.5" PointX="5.25" PointY="6.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="BDictionaryModel.QuestionAnswer" Width="1.5" PointX="3" PointY="8.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BDictionaryModel.QuestionCategory" Width="1.5" PointX="0.75" PointY="4.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BDictionaryModel.QuestionCreator" Width="1.5" PointX="7.5" PointY="6.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BDictionaryModel.Region" Width="1.5" PointX="2.75" PointY="11.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="BDictionaryModel.Synonym" Width="1.5" PointX="12.25" PointY="3.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="BDictionaryModel.Word" Width="1.5" PointX="10" PointY="3" IsExpanded="true" />
+        <EntityTypeShape EntityType="BDictionaryModel.WordType" Width="1.5" PointX="7.75" PointY="3.5" IsExpanded="true" />
+        <AssociationConnector Association="BDictionaryModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" ManuallyRouted="false" />
+        <AssociationConnector Association="BDictionaryModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" ManuallyRouted="false" />
+        <AssociationConnector Association="BDictionaryModel.FK_QuestionCreator_User" ManuallyRouted="false" />
+        <AssociationConnector Association="BDictionaryModel.FK_Question_Answer" ManuallyRouted="false" />
+        <AssociationConnector Association="BDictionaryModel.FK_Question_QuestionCategory" ManuallyRouted="false" />
+        <AssociationConnector Association="BDictionaryModel.FK_QuestionCreator_Question" ManuallyRouted="false" />
+        <AssociationConnector Association="BDictionaryModel.FK_QuestionAnswer_QuestionCategory" ManuallyRouted="false" />
+        <AssociationConnector Association="BDictionaryModel.FK_QuestionCategory_ParentQuestionCategory" ManuallyRouted="false" />
+        <AssociationConnector Association="BDictionaryModel.FK_Word_FirstSynonym" ManuallyRouted="false" />
+        <AssociationConnector Association="BDictionaryModel.FK_Word_SecondSynonym" ManuallyRouted="false" />
+        <AssociationConnector Association="BDictionaryModel.FK_Word_WordType" ManuallyRouted="false" />
+        <AssociationConnector Association="BDictionaryModel.AspNetUserRoles" ManuallyRouted="false" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

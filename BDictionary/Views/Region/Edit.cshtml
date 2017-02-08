@@ -1,0 +1,49 @@
+﻿@model BDictionary.Domain.Region
+
+@{
+    ViewBag.Title = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        <div class="col-md-12">
+            <h2 class="left">@Model.Name</h2>
+            <button id="saveRegion" type="submit" class="btn btn-primary left"><span class="glyphicon glyphicon-floppy-disk"></span></button>
+            <hr class="col-md-12"/>
+        </div>
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.Id)
+        @Html.HiddenFor(model => model.Name)
+        @Html.HiddenFor(model => model.Description)
+
+        <div class="form-group col-lg-12">
+            <textarea class="form-control form-control-long" rows="10">@Model.Description</textarea>
+        </div>
+
+    </div>
+}
+
+<div class="regions-back-to-list-button">
+    <a class="btn btn-primary" href=@Url.Action("Index")><span class="glyphicon glyphicon-backward"></span>&nbsp;&nbsp;Назад, назад, моме Калино</a>
+</div>
+
+@using (Html.BeginScripts())
+{
+    <script>
+        $(document).ready(function () {
+            $("#saveRegion").click(function () {
+                var description = $('textarea').val();
+                $("#Description").val(description);
+
+                var $form = $(this).parents('form');
+                $form.attr('action', '/Region/SaveRegion');
+                $form[0].submit();
+            })
+        });
+    </script>
+}

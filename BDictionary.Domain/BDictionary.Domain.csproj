@@ -92,10 +92,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>BDictionaryModel.edmx</DependentUpon>
     </Compile>
-    <Compile Include="BDictionaryModel.Inderface.Context.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>BDictionaryModel.Inderface.Context.tt</DependentUpon>
+    <Compile Include="C__RefactorLog.cs">
+      <DependentUpon>BDictionaryModel.tt</DependentUpon>
     </Compile>
     <Compile Include="HelperModels\Enums.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -108,9 +106,26 @@
     <Compile Include="QuestionCategory.cs">
       <DependentUpon>BDictionaryModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="QuestionCreator.cs">
+      <DependentUpon>BDictionaryModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Region.cs">
+      <DependentUpon>BDictionaryModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Synonym.cs">
+      <DependentUpon>BDictionaryModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Word.cs">
+      <DependentUpon>BDictionaryModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="WordType.cs">
+      <DependentUpon>BDictionaryModel.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <EntityDeploy Include="BDictionaryModel.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>BDictionaryModel.Designer.cs</LastGenOutput>
@@ -129,11 +144,6 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>BDictionaryModel.edmx</DependentUpon>
       <LastGenOutput>BDictionaryModel.Context.cs</LastGenOutput>
-    </Content>
-    <Content Include="BDictionaryModel.Inderface.Context.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>BDictionaryModel.Inderface.Context.cs</LastGenOutput>
-      <DependentUpon>BDictionaryModel.edmx</DependentUpon>
     </Content>
     <Content Include="BDictionaryModel.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

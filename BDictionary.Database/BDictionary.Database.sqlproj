@@ -72,8 +72,17 @@
     <Build Include="dbo\Tables\Question.sql" />
     <Build Include="dbo\Tables\QuestionAnswer.sql" />
     <None Include="IdentityData.sql" />
+    <Build Include="dbo\Tables\Word.sql" />
+    <Build Include="dbo\Tables\WordType.sql" />
+    <Build Include="dbo\Tables\Synonyms.sql" />
+    <Build Include="dbo\Tables\Region.sql" />
+    <None Include="RegionData.sql" />
+    <Build Include="dbo\Tables\QuestionCreator.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="BDictionary.Database.refactorlog" />
   </ItemGroup>
 </Project>

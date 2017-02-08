@@ -25,6 +25,7 @@ namespace BDictionary.Domain
             throw new UnintentionalCodeFirstException();
         }
     
+        public virtual DbSet<C__RefactorLog> C__RefactorLog { get; set; }
         public virtual DbSet<AspNetRole> AspNetRoles { get; set; }
         public virtual DbSet<AspNetUserClaim> AspNetUserClaims { get; set; }
         public virtual DbSet<AspNetUserLogin> AspNetUserLogins { get; set; }
@@ -32,5 +33,10 @@ namespace BDictionary.Domain
         public virtual DbSet<Question> Questions { get; set; }
         public virtual DbSet<QuestionAnswer> QuestionAnswers { get; set; }
         public virtual DbSet<QuestionCategory> QuestionCategories { get; set; }
+        public virtual DbSet<QuestionCreator> QuestionCreators { get; set; }
+        public virtual DbSet<Region> Regions { get; set; }
+        public virtual DbSet<Synonym> Synonyms { get; set; }
+        public virtual DbSet<Word> Words { get; set; }
+        public virtual DbSet<WordType> WordTypes { get; set; }
     }
 }

@@ -26,6 +26,7 @@ namespace BDictionary.Domain
         public string Name { get; set; }
         public int AnswerType { get; set; }
         public Nullable<int> ParentID { get; set; }
+        public System.DateTime DateCreated { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Question> Questions { get; set; }

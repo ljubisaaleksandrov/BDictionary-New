@@ -16,6 +16,8 @@
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         @Html.HiddenFor(model => model.QuestionCategoryViewModel.Id)
+        @Html.HiddenFor(model => model.QuestionCategoryViewModel.Parent)
+        @Html.HiddenFor(model => model.QuestionCategoryViewModel.QuestionAnswerType)
 
         <div class="form-group">
             @Html.LabelFor(model => model.QuestionCategoryViewModel.Name, htmlAttributes: new { @class = "control-label col-md-2" })
@@ -28,9 +30,9 @@
         <div class="form-group">
             @Html.LabelFor(model => model.QuestionCategoryViewModel.Parent, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.QuestionCategoryViewModel.Parent, new { htmlAttributes = new { @class = "form-control left", @disabled = "disabled" } })
-                @Html.ValidationMessageFor(model => model.QuestionCategoryViewModel.Parent, "", new { @class = "text-danger" })
-                <button class="btn btn-info button-margin-left" id="AddAsParentQC"><span class="glyphicon glyphicon-backward"></span>&nbsp; Add Parent</button>
+                @Html.HiddenFor(model => model.QuestionCategoryViewModel.Parent)
+                <input type="text" id="QuestionCategoryParent" class="form-control left" disabled="disabled" value='@Model.QuestionCategoryViewModel.Parent' />
+                <button class="btn btn-info button-margin-left" onclick="qc.AddParentCategory(event)" id="AddAsParentQC"><span class="glyphicon glyphicon-backward"></span>&nbsp; Add Parent</button>
             </div>
         </div>
 
@@ -38,8 +40,13 @@
             <div class="col-md-2"></div>
             <div class="col-md-10">
                 @Html.HiddenFor(model => model.QuestionCategoryViewModel.QuestionAnswerType)
-                <a href="#" onclick="qc.SelectAnswerType('Text')" class="question-answer-type"><img src="~/Content/Images/letter-icon-white-black.bmp" id="TextAnswerType"/></a>
-                <a href="#" onclick="qc.SelectAnswerType('Number')"  class="question-answer-type"><img src="~/Content/Images/number-icon-white-black.bmp" id="NumberAnswerType"/></a>
+                @{ 
+                    // Number = 1; Text = 2
+                    var numTypeImageSource = Model.QuestionCategoryViewModel.QuestionAnswerType == 1 ? "/Content/Images/number-icon-colour.bmp" : "/Content/Images/number-icon-white-black.bmp";
+                    var textTypeImageSource = Model.QuestionCategoryViewModel.QuestionAnswerType == 2 ? "/Content/Images/letter-icon-colour.bmp" : "/Content/Images/letter-icon-white-black.bmp";
+                }
+                <a href="#" onclick="qc.SelectAnswerType('Text')" class="question-answer-type"><img src="@textTypeImageSource" id="TextAnswerType"/></a>
+                <a href="#" onclick="qc.SelectAnswerType('Number')"  class="question-answer-type"><img src='@numTypeImageSource' id="NumberAnswerType"/></a>
             </div>
         </div>
 
@@ -51,7 +58,7 @@
             </div>
         </div>
     </div>
-}
+                    }
 
 <!-- @using (Html.BeginScripts())
 {

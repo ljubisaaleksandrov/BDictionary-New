@@ -31,11 +31,14 @@ namespace BDictionary.Business
                     existingCategory.Name = category.Name;
                     existingCategory.ParentID = category.ParentID != 0 ? category.ParentID : null;
                     existingCategory.AnswerType = category.AnswerType;
+                    db.SaveChanges();
 
+                    // Update Question Answers for Selected Category
                     List<QuestionAnswer> existingAnswers = db.QuestionAnswers.Where(qa => qa.CategoryID == category.Id).ToList();
                     foreach (QuestionAnswer existingAnswer in existingAnswers)
                     {
-                        if (!category.QuestionAnswers.Any(qa => qa.Id == existingAnswer.Id))
+                        QuestionAnswer answer = category.QuestionAnswers?.FirstOrDefault(qa => qa.Id == existingAnswer.Id);
+                        if (answer == null)
                             db.QuestionAnswers.Remove(existingAnswer);
                     }
 
@@ -44,21 +47,46 @@ namespace BDictionary.Business
                         QuestionAnswer existingAnswer = db.QuestionAnswers.Where(qa => qa.Id == modelAnswer.Id).FirstOrDefault();
                         if (existingAnswer == null)
                         {
-                            QuestionAnswer newAnswer = new QuestionAnswer()
+                            db.QuestionAnswers.Add(new QuestionAnswer()
                             {
                                 CategoryID = category.Id,
                                 Value = ParseAnswer(modelAnswer.Value, category.AnswerType)
-                            };
-
-                            db.QuestionAnswers.Add(newAnswer);
+                            });
                         }
-                        else
-                        {
+                        else if (existingAnswer.Value.Trim() != modelAnswer.Value.Trim())
                             existingAnswer.Value = ParseAnswer(modelAnswer.Value, category.AnswerType);
-                        }
-
-                        db.SaveChanges();
                     }
+                    db.SaveChanges();
+                    
+                    // Update Questions for Selected Category
+                    List<Question> existingsQuestion = db.Questions.Where(qa => qa.CategoryID == category.Id).ToList();
+                    foreach (Question existingQuestion in existingsQuestion)
+                    {
+                        Question question = category.Questions?.FirstOrDefault(qa => qa.Id == existingQuestion.Id);
+                        if (question == null)
+                            db.Questions.Remove(existingQuestion);
+                    }
+
+                    foreach (Question modelQuestion in category.Questions)
+                    {
+                        Question existing = db.Questions.Where(qa => qa.Id == modelQuestion.Id).FirstOrDefault();
+                        if (existing == null)
+                        {
+                            QuestionAnswer answer = db.QuestionAnswers.Where(qa => qa.CategoryID == category.Id && qa.Value == modelQuestion.QuestionAnswer.Value.Trim()).FirstOrDefault();
+                            db.Questions.Add(new Question()
+                            {
+                                CategoryID = category.Id,
+                                Value = modelQuestion.Value,
+                                AnswerID = answer.Id,
+                                Creator = modelQuestion.Creator,
+                                IsShiz = modelQuestion.IsShiz
+                            });
+                            answer.IsPrimary = true;
+                        }
+                        else if (existing.Value.Trim() != modelQuestion.Value.Trim())
+                            existing.Value = ParseAnswer(modelQuestion.Value, category.AnswerType);
+                    }
+                    db.SaveChanges();
                 }
                 else
                 {
@@ -68,16 +96,46 @@ namespace BDictionary.Business
                         ParentID = category.ParentID != 0 ? category.ParentID : null,
                         AnswerType = category.AnswerType
                     };
-
+                    db.QuestionCategories.Add(newCategory);
                     db.SaveChanges();
 
+                    // Adding Answers for Selected Category
                     foreach (QuestionAnswer modelAnswer in category.QuestionAnswers)
                     {
-                        modelAnswer.CategoryID = newCategory.Id;
-                        db.QuestionAnswers.Add(modelAnswer);
+                        QuestionAnswer existingAnswer = db.QuestionAnswers.Where(qa => qa.Id == modelAnswer.Id).FirstOrDefault();
+                        if (existingAnswer == null)
+                        {
+                            db.QuestionAnswers.Add(new QuestionAnswer()
+                            {
+                                CategoryID = newCategory.Id,
+                                Value = ParseAnswer(modelAnswer.Value, category.AnswerType)
+                            });
+                        }
+                        else if (existingAnswer.Value.Trim() != modelAnswer.Value.Trim())
+                            existingAnswer.Value = ParseAnswer(modelAnswer.Value, category.AnswerType);
                     }
+                    db.SaveChanges();
 
-                    db.QuestionCategories.Add(newCategory);
+                    // Adding Questions for Selected Category
+                    foreach (Question modelQuestion in category.Questions)
+                    {
+                        Question existing = db.Questions.Where(qa => qa.Id == modelQuestion.Id).FirstOrDefault();
+                        if (existing == null)
+                        {
+                            QuestionAnswer answer = db.QuestionAnswers.Where(qa => qa.CategoryID == newCategory.Id && qa.Value.Trim() == modelQuestion.QuestionAnswer.Value.Trim()).FirstOrDefault();
+                            db.Questions.Add(new Question()
+                            {
+                                CategoryID = newCategory.Id,
+                                Value = modelQuestion.Value,
+                                AnswerID = answer.Id,
+                                Creator = modelQuestion.Creator,
+                                IsShiz = modelQuestion.IsShiz
+                            });
+                            answer.IsPrimary = true;
+                        }
+                        else if (existing.Value.Trim() != modelQuestion.Value.Trim())
+                            existing.Value = ParseAnswer(modelQuestion.Value, category.AnswerType);
+                    }
                 }
 
                 db.SaveChanges();
@@ -177,7 +235,15 @@ namespace BDictionary.Business
         {
             using (BDictionaryEntities db = new BDictionaryEntities())
             {
-                return db.QuestionCategories.Include(x => x.QuestionAnswers).Include(x => x.Questions).Where(c => c.Id == categoryId).FirstOrDefault().QuestionAnswers;
+                return db.QuestionCategories.Include(x => x.QuestionAnswers).Include(x => x.Questions).Where(c => c.Id == categoryId).FirstOrDefault()?.QuestionAnswers;
+            }
+        }
+
+        public bool IsPrimaryAnswer(int answerId)
+        {
+            using (BDictionaryEntities db = new BDictionaryEntities())
+            {
+                return db.QuestionAnswers.FirstOrDefault(qa => qa.Id == answerId).IsPrimary;
             }
         }
 
@@ -185,7 +251,7 @@ namespace BDictionary.Business
         {
             using (BDictionaryEntities db = new BDictionaryEntities())
             {
-                return db.QuestionCategories.Where(c => c.Id == categoryId).FirstOrDefault();
+                return db.QuestionCategories.Include(x => x.QuestionCategory2).Where(c => c.Id == categoryId).FirstOrDefault();
             }
         }
 
@@ -201,7 +267,7 @@ namespace BDictionary.Business
         {
             using (BDictionaryEntities db = new BDictionaryEntities())
             {
-                return db.QuestionCategories.Include(x => x.QuestionAnswers).Where(c => c.Id == categoryId).FirstOrDefault().Questions;
+                return db.QuestionCategories.Include(x => x.QuestionCategory2).Include(x => x.QuestionAnswers).Where(c => c.Id == categoryId).FirstOrDefault()?.Questions;
             }
         }
 
@@ -240,6 +306,23 @@ namespace BDictionary.Business
                 }
             }
             return result;
+        }
+
+        public void RemoveCategory(int categoryId)
+        {
+            using (BDictionaryEntities db = new BDictionaryEntities())
+            {
+                QuestionCategory category = db.QuestionCategories.Where(c => c.Id == categoryId).FirstOrDefault();
+                foreach(QuestionCategory children in GetChildren(category.Id))
+                {
+                    children.ParentID = null;
+                    category.QuestionCategory1.Remove(children);
+                }
+
+                db.SaveChanges();
+                db.QuestionCategories.Remove(category);
+                db.SaveChanges();
+            }
         }
 
         #endregion

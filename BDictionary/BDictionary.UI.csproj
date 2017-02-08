@@ -192,17 +192,23 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\BaseAuhenticatedController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\DictionaryController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\QuestionCategoryController.cs" />
+    <Compile Include="Controllers\QuestionController.cs" />
+    <Compile Include="Controllers\QuizController.cs" />
+    <Compile Include="Controllers\RegionController.cs" />
     <Compile Include="Controllers\RolesAdminController.cs" />
     <Compile Include="Controllers\UsersAdminController.cs" />
+    <Compile Include="Controllers\WordController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\Categories\CategoriesViewModelContainer.cs" />
-    <Compile Include="Models\Categories\QuestionAnswerViewModel.cs" />
-    <Compile Include="Models\Categories\CategoryViewModel.cs" />
+    <Compile Include="Models\QuestionCategories\CategoriesViewModelContainer.cs" />
+    <Compile Include="Models\QuestionCategories\QuestionAnswerViewModel.cs" />
+    <Compile Include="Models\QuestionCategories\CategoryViewModel.cs" />
+    <Compile Include="Models\QuestionCategories\QuestionViewModel.cs" />
     <Compile Include="Models\Identity\AccountViewModels.cs" />
     <Compile Include="Models\Identity\ActionError.cs" />
     <Compile Include="Models\Identity\EditUserViewModel.cs" />
@@ -213,7 +219,14 @@
     <Compile Include="Models\Identity\MenuItem.cs" />
     <Compile Include="Models\Identity\RoleViewModel.cs" />
     <Compile Include="Models\Identity\UserDetailsViewModel.cs" />
-    <Compile Include="Models\Categories\QuestionCategoryTreeViewModel.cs" />
+    <Compile Include="Models\QuestionCategories\QuestionCategoryTreeViewModel.cs" />
+    <Compile Include="Models\Words\WordListEntryViewModel.cs" />
+    <Compile Include="Models\Words\WordListViewModel.cs" />
+    <Compile Include="Models\Words\WordPagedListViewModel.cs" />
+    <Compile Include="Models\Words\WordViewModel.cs" />
+    <Compile Include="Models\Questions\QuestionListEntryViewModel.cs" />
+    <Compile Include="Models\Questions\QuestionListViewModel.cs" />
+    <Compile Include="Models\Questions\QuestionPagedListViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -223,6 +236,8 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\Custom.css" />
+    <Content Include="Content\Images\crazy-colour.jpg" />
+    <Content Include="Content\Images\crazy-white-black.jpg" />
     <Content Include="Content\Images\letter-icon-colour.bmp" />
     <Content Include="Content\Images\letter-icon-white-black.bmp" />
     <Content Include="Content\Images\number-icon-colour.bmp" />
@@ -243,7 +258,12 @@
     <Content Include="Content\bootstrap.min.css.map" />
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Content\bootstrap-theme.min.css.map" />
+    <None Include="Content\Gis\Bosilegrad_v0.1.geojsonp" />
+    <Content Include="Content\Gis\geojson.json" />
+    <Content Include="Content\Gis\geojson_id.json" />
     <None Include="Scripts\jquery-2.0.0.intellisense.js" />
+    <Content Include="Scripts\Custom\Question.js" />
+    <Content Include="Scripts\Custom\Word.js" />
     <Content Include="Scripts\Custom\QuestionCategory.js" />
     <Content Include="Scripts\Custom\QuestionCategoriesTree.js" />
     <Content Include="Scripts\jquery-2.0.0.js" />
@@ -259,19 +279,22 @@
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
+      <SubType>Designer</SubType>
     </Content>
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
+      <SubType>Designer</SubType>
     </Content>
     <Content Include="Views\Web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Home\About.cshtml" />
-    <Content Include="Views\Home\Contact.cshtml" />
+    <Content Include="Views\Home\Info.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
     <Content Include="Views\Account\ConfirmEmail.cshtml" />
@@ -305,6 +328,14 @@
     <Content Include="Views\QuestionCategory\Index.cshtml" />
     <Content Include="Views\QuestionCategory\QuestionCategoryEdit.cshtml" />
     <Content Include="Views\QuestionCategory\QuestionAnswerEdit.cshtml" />
+    <Content Include="Views\QuestionCategory\QuestionEdit.cshtml" />
+    <Content Include="Views\Question\Index.cshtml" />
+    <Content Include="Views\Word\Index.cshtml" />
+    <Content Include="Views\Quiz\Index.cshtml" />
+    <Content Include="Views\Dictionary\Index.cshtml" />
+    <Content Include="Views\Question\Edit.cshtml" />
+    <Content Include="Views\Region\Index.cshtml" />
+    <Content Include="Views\Region\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

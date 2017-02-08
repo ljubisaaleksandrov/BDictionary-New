@@ -1,0 +1,99 @@
+﻿@using BDictionary.BDictionary.UI.Models.Word
+@using PagedList
+@using PagedList.Mvc
+@model WordPagedListViewModel
+
+<h2>Думите од нашто краиште</h2>
+@using (Html.BeginForm("Index", Model.ItemController + "List", FormMethod.Get))
+{
+    <div class="display-inline-block">
+        <div class="listing-page-search-container">
+            @Html.TextBox("SearchString", (string)ViewBag.CurrentFilter, new { @class = "form-control display-inline left" })
+            <a href="@(Url.Action("Index", Model.ItemController ))" class="btn btn-success left" id="applaySearch">
+                <span class="glyphicon glyphicon glyphicon-search"></span>
+            </a>
+            <a href="@(Url.Action("Index", Model.ItemController ))" class="btn btn-primary left" id="newWord">
+                <span class="glyphicon glyphicon-plus"></span>
+            </a>
+        </div>
+        @*<div class="listing-page-filters-container">
+            @if (Model.Venues != null)
+            {
+                <div class="paged-list-selector-container">
+                    <span class="left">Venue: </span>
+                    @{
+                        var venueSelectItems = new SelectList(Model.Venues, selectedValue: Model.VenueSelected);
+                        @Html.DropDownList("venueSelected", venueSelectItems, new { @id = "VenuesList", @name = "VenuesList", @class = "form-control" });
+                    }
+                </div>
+            }
+        </div>*@
+    </div>
+}
+<div class="form-group display-inline-block">
+    <div class="items-per-page form-group right">
+        <b>Display</b>
+        @{
+            var selectItems = new SelectList(new List<int> { 10, 25, 50 }, selectedValue: Model.PageSize);
+            @Html.DropDownList("ItemsPerPage", selectItems, new { @id = "ItemsPerPageList", @name = "ItemsPerPageList", @class = "form-control" });
+        }
+        <b>per page</b>
+    </div>
+</div>
+@if (Model != null)
+{
+    <table class="table paged-list-table">
+        <tr>
+            <th>
+                @Html.ActionLink("Value", "Index", new { sortOrder = ViewBag.ValueSortParm, currentFilter = ViewBag.CurrentFilter, pageSize = ViewBag.CurrentItemsPerPage, })
+            </th>
+            <th>
+                @Html.ActionLink("Description", "Index", new { sortOrder = ViewBag.DescriptionSortParm, currentFilter = ViewBag.CurrentFilter, pageSize = ViewBag.CurrentItemsPerPage, })
+            </th>
+            <th>
+                @Html.ActionLink("Type", "Index", new { sortOrder = ViewBag.TypeSortParm, currentFilter = ViewBag.CurrentFilter, pageSize = ViewBag.CurrentItemsPerPage, })
+            </th>
+            <th></th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model.ListEntries)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Value)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Type )
+                </td>
+                <td class="listing-page-view-btn">
+                    @Html.ActionLink("Edit", "Index", Model.ItemController, new { id = item.Id }, new { @class = "btn btn-primary" })
+                </td>
+                <td class="listing-page-view-btn">
+                    @Html.ActionLink("Delete", "Delete", Model.ItemController, new { id = item.Id }, new { @class = "btn btn-primary" })
+                </td>
+            </tr>
+        }
+        <tr><td></td><td></td><td></td><td></td><td></td></tr>
+    </table>
+
+    <p>Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount</p>
+
+    @Html.PagedListPager((IPagedList)Model, page => Url.Action("Index", new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter, pageSize = ViewBag.CurrentItemsPerPage }))
+}
+else
+{
+    <p class="display-inline-block">There are no catalogs in database.</p>
+}
+
+@using (Html.BeginScripts())
+{
+    <script src="/Scripts/Custom/Word.js"></script>
+    <script>
+        var wd = new InventoryStaiton.Word();
+        wd.init();
+    </script>
+}

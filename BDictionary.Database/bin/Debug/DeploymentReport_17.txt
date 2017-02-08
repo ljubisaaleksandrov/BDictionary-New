@@ -1,0 +1,29 @@
+﻿** Highlights
+     Tables that will be rebuilt
+       [dbo].[Word]
+     Clustered indexes that will be dropped
+       None
+     Clustered indexes that will be created
+       None
+     Possible data issues
+       The column [dbo].[Word].[Example] on table [dbo].[Word] must be added, but the column has no default value and does not
+         allow NULL values. If the table contains data, the ALTER script will not work. To avoid this issue you must either: add
+         a default value to the column, mark it as allowing NULL values, or enable the generation of smart-defaults as a
+         deployment option.
+
+** User actions
+     Table rebuild
+       [dbo].[Word] (Table)
+
+** Supporting actions
+     Drop
+       [dbo].[FK_Word_FirstSynonym] (Foreign Key)
+       [dbo].[FK_Word_SecondSynonym] (Foreign Key)
+       [dbo].[FK_Word_WordType] (Foreign Key)
+     Create
+       [dbo].[FK_Word_FirstSynonym] (Foreign Key)
+       [dbo].[FK_Word_SecondSynonym] (Foreign Key)
+       [dbo].[FK_Word_WordType] (Foreign Key)
+
+The column [dbo].[Word].[Example] on table [dbo].[Word] must be added, but the column has no default value and does not allow NULL values. If the table contains data, the ALTER script will not work. To avoid this issue you must either: add a default value to the column, mark it as allowing NULL values, or enable the generation of smart-defaults as a deployment option.
+

@@ -90,8 +90,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IQuestionCategoryService.cs" />
+    <Compile Include="IRegionService.cs" />
+    <Compile Include="IWordService.cs" />
+    <Compile Include="IQuestionService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QuestionCategoryService.cs" />
+    <Compile Include="QuestionService.cs" />
+    <Compile Include="RegionService.cs" />
+    <Compile Include="WordService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BDictionary.Domain\BDictionary.Domain.csproj">

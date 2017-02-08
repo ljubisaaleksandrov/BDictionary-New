@@ -1,4 +1,6 @@
-﻿using System;
+﻿using BDictionary.Business;
+using BDictionary.Domain;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -8,23 +10,34 @@ namespace BDictionary.UI.Controllers
 {
     public class HomeController : Controller
     {
+        #region Fields
+        private readonly IRegionService _regionService;
+        #endregion
+
+        #region Constructors
+        public HomeController(IRegionService regionService)
+        {
+            _regionService = regionService;
+        }
+        #endregion
+
         public ActionResult Index()
         {
             return View();
         }
 
-        public ActionResult About()
+        public ActionResult Info()
         {
             ViewBag.Message = "Your application description page.";
 
             return View();
         }
 
-        public ActionResult Contact()
+        public ActionResult RegionDetails(int id)
         {
-            ViewBag.Message = "Your contact page.";
+            Region region = _regionService.GetRegion(id);
 
-            return View();
+            return Json( new { regionName = region.Name, description = region.Description }, JsonRequestBehavior.AllowGet);
         }
     }
 }

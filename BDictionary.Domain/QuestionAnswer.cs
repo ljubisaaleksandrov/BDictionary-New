@@ -23,6 +23,7 @@ namespace BDictionary.Domain
         public int Id { get; set; }
         public string Value { get; set; }
         public int CategoryID { get; set; }
+        public bool IsPrimary { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Question> Questions { get; set; }

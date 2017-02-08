@@ -14,12 +14,23 @@ namespace BDictionary.Domain
     
     public partial class Question
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Question()
+        {
+            this.QuestionCreators = new HashSet<QuestionCreator>();
+        }
+    
         public int Id { get; set; }
         public string Value { get; set; }
         public int AnswerID { get; set; }
+        public bool IsShiz { get; set; }
+        public string Creator { get; set; }
         public int CategoryID { get; set; }
+        public System.DateTime DateCreated { get; set; }
     
         public virtual QuestionAnswer QuestionAnswer { get; set; }
         public virtual QuestionCategory QuestionCategory { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<QuestionCreator> QuestionCreators { get; set; }
     }
 }

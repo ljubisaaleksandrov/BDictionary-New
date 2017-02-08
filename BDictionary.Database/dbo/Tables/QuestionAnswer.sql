@@ -6,5 +6,5 @@
 	[IsPrimary]					Bit				NOT NULL
 
 	CONSTRAINT [PK_dbo.QuestionAnswer] PRIMARY KEY CLUSTERED ([Id] ASC)
-    CONSTRAINT [FK_QuestionAnswer_QuestionCategory] FOREIGN KEY ([CategoryID]) REFERENCES [dbo].[QuestionCategory] ([Id])
+    CONSTRAINT [FK_QuestionAnswer_QuestionCategory] FOREIGN KEY ([CategoryID]) REFERENCES [dbo].[QuestionCategory] ([Id]) ON DELETE CASCADE
 )

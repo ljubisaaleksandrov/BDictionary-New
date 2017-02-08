@@ -5,21 +5,24 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Question Categories</h2>
-<hr />
+@*<h2>Question Categories</h2>
+<hr />*@
 
 @using (Html.BeginForm())
 {
     <div class="col-md-12">
-        <div class="existing-catogories">
+        <div class="existing-categories">
             <h4>Search Existing Question Categories</h4>
             <hr />
+            @Html.HiddenFor(model => model.SelectedCategoryName)
+            @Html.HiddenFor(model => model.SelectedCategoryId)
+
             <div class="form-group @(Model.QuestionCategoryTreeViewModel.CategoryError ? "has-error" : string.Empty)">
                 @Html.Label("Category", htmlAttributes: new { @class = "control-label col-md-2" })
                 <input type="text" id="categoryName" class="form-control textareaExpand make-typeahead-categories" autocomplete="off" data_val="true" data_val_required="The field is required." value="@(Model.QuestionCategoryTreeViewModel.SelectedCategoryName)">
                 @Html.HiddenFor(model => model.QuestionCategoryTreeViewModel.SelectedCategoryId, new { @id = "categoryId" })
-                <div class="selected-category-options">
-                    <button class="btn btn-success" onclick="qc.EditQuestionCategory(event)"><span class="glyphicon glyphicon-pencil"></span></button>
+                <div class="selected-category-options" id='@Model.SelectedCategoryId'>
+                    <button class="btn btn-success"  onclick="qc.EditQuestionCategory(event)"><span class="glyphicon glyphicon-pencil"></span></button>
                     <button class="btn btn-danger" onclick="qc.RemoveQuestionCategory(event)"><span class="glyphicon glyphicon-trash"></span></button>
                 </div>
             </div>
@@ -35,8 +38,14 @@
         </div>
         <div class="new-answer">
             @Html.Partial("QuestionAnswerEdit", Model)
-            <input id="QuestionAnswerHelper_AnswerToRemove" name="QuestionAnswerHelper.AnswerToRemove" type="hidden" value="">
-            <input id="QuestionAnswerHelper_AnswerToAdd" name="QuestionAnswerHelper.AnswerToAdd" type="hidden" value="">
+            <input id="QuestionAnswerHelperViewModel_AnswerToRemove" name="QuestionAnswerHelperViewModel.AnswerToRemove" type="hidden" value="">
+            <input id="QuestionAnswerHelperViewModel_AnswerToAdd" name="QuestionAnswerHelperViewModel.AnswerToAdd" type="hidden" value="">
+        </div>
+        <div class="new-question">
+            @Html.Partial("QuestionEdit", Model)
+            @Html.HiddenFor(model => model.QuestionHelperViewModel.QuestionToAdd)
+            @Html.HiddenFor(model => model.QuestionHelperViewModel.QuestionToRemove)
+            @Html.HiddenFor(model => model.QuestionHelperViewModel.SelectedAnswer)
         </div>
     </div>
 }

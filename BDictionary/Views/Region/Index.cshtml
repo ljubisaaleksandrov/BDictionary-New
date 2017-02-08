@@ -1,0 +1,47 @@
+﻿@model IEnumerable<BDictionary.Domain.Region>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<p>
+    <h2 class="left">Ређионите</h2>
+    <a href="#" class="btn btn-primary left" id="newRegion" disabled="disabled">
+        <span class="glyphicon glyphicon-plus"></span>
+    </a>
+</p>
+<table class="table table-striped regions-table">
+    <thead>
+        <tr>
+            <th>
+                Име
+            </th>
+            <th>
+                Кратак Опис
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+
+@foreach (var item in Model) {
+    <tr>
+        <td class="regions-table-name">
+            @Html.DisplayFor(modelItem => item.Name)
+        </td>
+        <td class="regions-table-description    ">
+            @Html.DisplayFor(modelItem => item.Description)
+        </td>
+        <td>
+            <a href="@Url.Action("Edit", new { id=item.Id })" id="editRegion" class="btn btn-success">
+                <span class="glyphicon glyphicon-pencil"></span>
+            </a>
+            @*<a href="@Url.Action("Delete", new { id=item.Id })" class="btn btn-success">
+                <span class="glyphicon glyphicon-trash"></span>
+            </a>*@
+        </td>
+    </tr>
+}
+
+</table>

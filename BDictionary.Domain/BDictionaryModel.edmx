@@ -4,7 +4,13 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="BDictionaryModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="BDictionaryModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="__RefactorLog">
+          <Key>
+            <PropertyRef Name="OperationKey" />
+          </Key>
+          <Property Name="OperationKey" Type="uniqueidentifier" Nullable="false" />
+        </EntityType>
         <EntityType Name="AspNetRoles">
           <Key>
             <PropertyRef Name="Id" />
@@ -61,9 +67,12 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Value" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="Value" Type="nvarchar(max)" Nullable="false" />
           <Property Name="AnswerID" Type="int" Nullable="false" />
+          <Property Name="IsShiz" Type="bit" Nullable="false" />
+          <Property Name="Creator" Type="nvarchar" MaxLength="256" Nullable="false" />
           <Property Name="CategoryID" Type="int" Nullable="false" />
+          <Property Name="DateCreated" Type="datetime2" Precision="7" Nullable="false" />
         </EntityType>
         <EntityType Name="QuestionAnswer">
           <Key>
@@ -72,6 +81,7 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Value" Type="nvarchar" MaxLength="256" Nullable="false" />
           <Property Name="CategoryID" Type="int" Nullable="false" />
+          <Property Name="IsPrimary" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="QuestionCategory">
           <Key>
@@ -81,6 +91,48 @@
           <Property Name="Name" Type="nvarchar" MaxLength="256" Nullable="false" />
           <Property Name="AnswerType" Type="int" Nullable="false" />
           <Property Name="ParentID" Type="int" />
+          <Property Name="DateCreated" Type="datetime2" Precision="7" Nullable="false" />
+        </EntityType>
+        <EntityType Name="QuestionCreator">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserID" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="QuestionID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Region">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="30" Nullable="false" />
+          <Property Name="Description" Type="nvarchar(max)" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Synonym">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FirstSynonymID" Type="int" Nullable="false" />
+          <Property Name="SecondSynonymID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Word">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Value" Type="nvarchar" MaxLength="30" Nullable="false" />
+          <Property Name="Description" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Example" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="TypeID" Type="int" />
+        </EntityType>
+        <EntityType Name="WordType">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Value" Type="nvarchar" MaxLength="30" Nullable="false" />
         </EntityType>
         <Association Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
           <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="1">
@@ -139,7 +191,9 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Question_Answer">
-          <End Role="QuestionAnswer" Type="Self.QuestionAnswer" Multiplicity="1" />
+          <End Role="QuestionAnswer" Type="Self.QuestionAnswer" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
           <End Role="Question" Type="Self.Question" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="QuestionAnswer">
@@ -163,7 +217,9 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_QuestionAnswer_QuestionCategory">
-          <End Role="QuestionCategory" Type="Self.QuestionCategory" Multiplicity="1" />
+          <End Role="QuestionCategory" Type="Self.QuestionCategory" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
           <End Role="QuestionAnswer" Type="Self.QuestionAnswer" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="QuestionCategory">
@@ -186,7 +242,70 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_QuestionCreator_Question">
+          <End Role="Question" Type="Self.Question" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="QuestionCreator" Type="Self.QuestionCreator" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Question">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="QuestionCreator">
+              <PropertyRef Name="QuestionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_QuestionCreator_User">
+          <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="1" />
+          <End Role="QuestionCreator" Type="Self.QuestionCreator" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="QuestionCreator">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Word_FirstSynonym">
+          <End Role="Word" Type="Self.Word" Multiplicity="1" />
+          <End Role="Synonym" Type="Self.Synonym" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Word">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Synonym">
+              <PropertyRef Name="FirstSynonymID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Word_SecondSynonym">
+          <End Role="Word" Type="Self.Word" Multiplicity="1" />
+          <End Role="Synonym" Type="Self.Synonym" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Word">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Synonym">
+              <PropertyRef Name="SecondSynonymID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Word_WordType">
+          <End Role="WordType" Type="Self.WordType" Multiplicity="0..1" />
+          <End Role="Word" Type="Self.Word" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="WordType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Word">
+              <PropertyRef Name="TypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="BDictionaryModelStoreContainer">
+          <EntitySet Name="__RefactorLog" EntityType="Self.__RefactorLog" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetRoles" EntityType="Self.AspNetRoles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetUserClaims" EntityType="Self.AspNetUserClaims" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetUserLogins" EntityType="Self.AspNetUserLogins" Schema="dbo" store:Type="Tables" />
@@ -195,6 +314,11 @@
           <EntitySet Name="Question" EntityType="Self.Question" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="QuestionAnswer" EntityType="Self.QuestionAnswer" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="QuestionCategory" EntityType="Self.QuestionCategory" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="QuestionCreator" EntityType="Self.QuestionCreator" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Region" EntityType="Self.Region" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Synonym" EntityType="Self.Synonym" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Word" EntityType="Self.Word" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="WordType" EntityType="Self.WordType" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" Association="Self.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
             <End Role="AspNetUserClaims" EntitySet="AspNetUserClaims" />
@@ -227,65 +351,55 @@
             <End Role="QuestionCategory" EntitySet="QuestionCategory" />
             <End Role="QuestionCategory1" EntitySet="QuestionCategory" />
           </AssociationSet>
+          <AssociationSet Name="FK_QuestionCreator_Question" Association="Self.FK_QuestionCreator_Question">
+            <End Role="Question" EntitySet="Question" />
+            <End Role="QuestionCreator" EntitySet="QuestionCreator" />
+          </AssociationSet>
+          <AssociationSet Name="FK_QuestionCreator_User" Association="Self.FK_QuestionCreator_User">
+            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
+            <End Role="QuestionCreator" EntitySet="QuestionCreator" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Word_FirstSynonym" Association="Self.FK_Word_FirstSynonym">
+            <End Role="Word" EntitySet="Word" />
+            <End Role="Synonym" EntitySet="Synonym" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Word_SecondSynonym" Association="Self.FK_Word_SecondSynonym">
+            <End Role="Word" EntitySet="Word" />
+            <End Role="Synonym" EntitySet="Synonym" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Word_WordType" Association="Self.FK_Word_WordType">
+            <End Role="WordType" EntitySet="WordType" />
+            <End Role="Word" EntitySet="Word" />
+          </AssociationSet>
         </EntityContainer>
-      </Schema></edmx:StorageModels>
+      </Schema>
+    </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="BDictionaryModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
-        <EntityContainer Name="BDictionaryEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="AspNetRoles" EntityType="BDictionaryModel.AspNetRole" />
-          <EntitySet Name="AspNetUserClaims" EntityType="BDictionaryModel.AspNetUserClaim" />
-          <EntitySet Name="AspNetUserLogins" EntityType="BDictionaryModel.AspNetUserLogin" />
-          <EntitySet Name="AspNetUsers" EntityType="BDictionaryModel.AspNetUser" />
-          <EntitySet Name="Questions" EntityType="BDictionaryModel.Question" />
-          <EntitySet Name="QuestionAnswers" EntityType="BDictionaryModel.QuestionAnswer" />
-          <EntitySet Name="QuestionCategories" EntityType="BDictionaryModel.QuestionCategory" />
-          <AssociationSet Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" Association="BDictionaryModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
-            <End Role="AspNetUser" EntitySet="AspNetUsers" />
-            <End Role="AspNetUserClaim" EntitySet="AspNetUserClaims" />
-          </AssociationSet>
-          <AssociationSet Name="FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" Association="BDictionaryModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId">
-            <End Role="AspNetUser" EntitySet="AspNetUsers" />
-            <End Role="AspNetUserLogin" EntitySet="AspNetUserLogins" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Question_Answer" Association="BDictionaryModel.FK_Question_Answer">
-            <End Role="QuestionAnswer" EntitySet="QuestionAnswers" />
-            <End Role="Question" EntitySet="Questions" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Question_QuestionCategory" Association="BDictionaryModel.FK_Question_QuestionCategory">
-            <End Role="QuestionCategory" EntitySet="QuestionCategories" />
-            <End Role="Question" EntitySet="Questions" />
-          </AssociationSet>
-          <AssociationSet Name="FK_QuestionAnswer_QuestionCategory" Association="BDictionaryModel.FK_QuestionAnswer_QuestionCategory">
-            <End Role="QuestionCategory" EntitySet="QuestionCategories" />
-            <End Role="QuestionAnswer" EntitySet="QuestionAnswers" />
-          </AssociationSet>
-          <AssociationSet Name="FK_QuestionCategory_ParentQuestionCategory" Association="BDictionaryModel.FK_QuestionCategory_ParentQuestionCategory">
-            <End Role="QuestionCategory" EntitySet="QuestionCategories" />
-            <End Role="QuestionCategory1" EntitySet="QuestionCategories" />
-          </AssociationSet>
-          <AssociationSet Name="AspNetUserRoles" Association="BDictionaryModel.AspNetUserRoles">
-            <End Role="AspNetRole" EntitySet="AspNetRoles" />
-            <End Role="AspNetUser" EntitySet="AspNetUsers" />
-          </AssociationSet>
-        </EntityContainer>
+        <EntityType Name="C__RefactorLog">
+          <Key>
+            <PropertyRef Name="OperationKey" />
+          </Key>
+          <Property Name="OperationKey" Type="Guid" Nullable="false" />
+        </EntityType>
         <EntityType Name="AspNetRole">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
-          <Property Name="Id" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="AspNetUsers" Relationship="BDictionaryModel.AspNetUserRoles" FromRole="AspNetRole" ToRole="AspNetUser" />
+          <Property Name="Id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="AspNetUsers" Relationship="Self.AspNetUserRoles" FromRole="AspNetRoles" ToRole="AspNetUsers" />
         </EntityType>
         <EntityType Name="AspNetUserClaim">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="UserId" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="UserId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="ClaimType" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="ClaimValue" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="AspNetUser" Relationship="BDictionaryModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" FromRole="AspNetUserClaim" ToRole="AspNetUser" />
+          <NavigationProperty Name="AspNetUser" Relationship="Self.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" FromRole="AspNetUserClaims" ToRole="AspNetUsers" />
         </EntityType>
         <EntityType Name="AspNetUserLogin">
           <Key>
@@ -293,16 +407,16 @@
             <PropertyRef Name="ProviderKey" />
             <PropertyRef Name="UserId" />
           </Key>
-          <Property Name="LoginProvider" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="ProviderKey" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
-          <Property Name="UserId" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="AspNetUser" Relationship="BDictionaryModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" FromRole="AspNetUserLogin" ToRole="AspNetUser" />
+          <Property Name="LoginProvider" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ProviderKey" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="UserId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="AspNetUser" Relationship="Self.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" FromRole="AspNetUserLogins" ToRole="AspNetUsers" />
         </EntityType>
         <EntityType Name="AspNetUser">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
-          <Property Name="Id" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="Id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Email" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
           <Property Name="EmailConfirmed" Type="Boolean" Nullable="false" />
           <Property Name="PasswordHash" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
@@ -313,76 +427,146 @@
           <Property Name="LockoutEndDateUtc" Type="DateTime" Precision="3" />
           <Property Name="LockoutEnabled" Type="Boolean" Nullable="false" />
           <Property Name="AccessFailedCount" Type="Int32" Nullable="false" />
-          <Property Name="UserName" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="AspNetUserClaims" Relationship="BDictionaryModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" FromRole="AspNetUser" ToRole="AspNetUserClaim" />
-          <NavigationProperty Name="AspNetUserLogins" Relationship="BDictionaryModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" FromRole="AspNetUser" ToRole="AspNetUserLogin" />
-          <NavigationProperty Name="AspNetRoles" Relationship="BDictionaryModel.AspNetUserRoles" FromRole="AspNetUser" ToRole="AspNetRole" />
+          <Property Name="UserName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="AspNetUserClaims" Relationship="Self.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" FromRole="AspNetUsers" ToRole="AspNetUserClaims" />
+          <NavigationProperty Name="AspNetUserLogins" Relationship="Self.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" FromRole="AspNetUsers" ToRole="AspNetUserLogins" />
+          <NavigationProperty Name="QuestionCreators" Relationship="Self.FK_QuestionCreator_User" FromRole="AspNetUsers" ToRole="QuestionCreator" />
+          <NavigationProperty Name="AspNetRoles" Relationship="Self.AspNetUserRoles" FromRole="AspNetUsers" ToRole="AspNetRoles" />
         </EntityType>
         <EntityType Name="Question">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Value" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="Value" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="AnswerID" Type="Int32" Nullable="false" />
+          <Property Name="IsShiz" Type="Boolean" Nullable="false" />
+          <Property Name="Creator" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="CategoryID" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="QuestionAnswer" Relationship="BDictionaryModel.FK_Question_Answer" FromRole="Question" ToRole="QuestionAnswer" />
-          <NavigationProperty Name="QuestionCategory" Relationship="BDictionaryModel.FK_Question_QuestionCategory" FromRole="Question" ToRole="QuestionCategory" />
+          <Property Name="DateCreated" Type="DateTime" Nullable="false" Precision="7" />
+          <NavigationProperty Name="QuestionAnswer" Relationship="Self.FK_Question_Answer" FromRole="Question" ToRole="QuestionAnswer" />
+          <NavigationProperty Name="QuestionCategory" Relationship="Self.FK_Question_QuestionCategory" FromRole="Question" ToRole="QuestionCategory" />
+          <NavigationProperty Name="QuestionCreators" Relationship="Self.FK_QuestionCreator_Question" FromRole="Question" ToRole="QuestionCreator" />
         </EntityType>
         <EntityType Name="QuestionAnswer">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Value" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="Value" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="CategoryID" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Questions" Relationship="BDictionaryModel.FK_Question_Answer" FromRole="QuestionAnswer" ToRole="Question" />
-          <NavigationProperty Name="QuestionCategory" Relationship="BDictionaryModel.FK_QuestionAnswer_QuestionCategory" FromRole="QuestionAnswer" ToRole="QuestionCategory" />
+          <Property Name="IsPrimary" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Questions" Relationship="Self.FK_Question_Answer" FromRole="QuestionAnswer" ToRole="Question" />
+          <NavigationProperty Name="QuestionCategory" Relationship="Self.FK_QuestionAnswer_QuestionCategory" FromRole="QuestionAnswer" ToRole="QuestionCategory" />
         </EntityType>
         <EntityType Name="QuestionCategory">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" Nullable="false" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="Name" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="AnswerType" Type="Int32" Nullable="false" />
           <Property Name="ParentID" Type="Int32" />
-          <NavigationProperty Name="Questions" Relationship="BDictionaryModel.FK_Question_QuestionCategory" FromRole="QuestionCategory" ToRole="Question" />
-          <NavigationProperty Name="QuestionAnswers" Relationship="BDictionaryModel.FK_QuestionAnswer_QuestionCategory" FromRole="QuestionCategory" ToRole="QuestionAnswer" />
-          <NavigationProperty Name="QuestionCategory1" Relationship="BDictionaryModel.FK_QuestionCategory_ParentQuestionCategory" FromRole="QuestionCategory" ToRole="QuestionCategory1" />
-          <NavigationProperty Name="QuestionCategory2" Relationship="BDictionaryModel.FK_QuestionCategory_ParentQuestionCategory" FromRole="QuestionCategory1" ToRole="QuestionCategory" />
+          <Property Name="DateCreated" Type="DateTime" Nullable="false" Precision="7" />
+          <NavigationProperty Name="Questions" Relationship="Self.FK_Question_QuestionCategory" FromRole="QuestionCategory" ToRole="Question" />
+          <NavigationProperty Name="QuestionAnswers" Relationship="Self.FK_QuestionAnswer_QuestionCategory" FromRole="QuestionCategory" ToRole="QuestionAnswer" />
+          <NavigationProperty Name="QuestionCategory1" Relationship="Self.FK_QuestionCategory_ParentQuestionCategory" FromRole="QuestionCategory" ToRole="QuestionCategory1" />
+          <NavigationProperty Name="QuestionCategory2" Relationship="Self.FK_QuestionCategory_ParentQuestionCategory" FromRole="QuestionCategory1" ToRole="QuestionCategory" />
+        </EntityType>
+        <EntityType Name="QuestionCreator">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserID" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="QuestionID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="AspNetUser" Relationship="Self.FK_QuestionCreator_User" FromRole="QuestionCreator" ToRole="AspNetUsers" />
+          <NavigationProperty Name="Question" Relationship="Self.FK_QuestionCreator_Question" FromRole="QuestionCreator" ToRole="Question" />
+        </EntityType>
+        <EntityType Name="Region">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="30" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Synonym">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FirstSynonymID" Type="Int32" Nullable="false" />
+          <Property Name="SecondSynonymID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Word" Relationship="Self.FK_Word_FirstSynonym" FromRole="Synonym" ToRole="Word" />
+          <NavigationProperty Name="Word1" Relationship="Self.FK_Word_SecondSynonym" FromRole="Synonym" ToRole="Word" />
+        </EntityType>
+        <EntityType Name="Word">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Value" Type="String" MaxLength="30" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Example" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="TypeID" Type="Int32" />
+          <NavigationProperty Name="Synonyms" Relationship="Self.FK_Word_FirstSynonym" FromRole="Word" ToRole="Synonym" />
+          <NavigationProperty Name="Synonyms1" Relationship="Self.FK_Word_SecondSynonym" FromRole="Word" ToRole="Synonym" />
+          <NavigationProperty Name="WordType" Relationship="Self.FK_Word_WordType" FromRole="Word" ToRole="WordType" />
+        </EntityType>
+        <EntityType Name="WordType">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Value" Type="String" MaxLength="30" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Words" Relationship="Self.FK_Word_WordType" FromRole="WordType" ToRole="Word" />
         </EntityType>
         <Association Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
-          <End Type="BDictionaryModel.AspNetUser" Role="AspNetUser" Multiplicity="1">
+          <End Role="AspNetUsers" Type="Self.AspNetUser" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Type="BDictionaryModel.AspNetUserClaim" Role="AspNetUserClaim" Multiplicity="*" />
+          <End Role="AspNetUserClaims" Type="Self.AspNetUserClaim" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="AspNetUser">
+            <Principal Role="AspNetUsers">
               <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="AspNetUserClaim">
+            <Dependent Role="AspNetUserClaims">
               <PropertyRef Name="UserId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId">
-          <End Type="BDictionaryModel.AspNetUser" Role="AspNetUser" Multiplicity="1">
+          <End Role="AspNetUsers" Type="Self.AspNetUser" Multiplicity="1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Type="BDictionaryModel.AspNetUserLogin" Role="AspNetUserLogin" Multiplicity="*" />
+          <End Role="AspNetUserLogins" Type="Self.AspNetUserLogin" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="AspNetUser">
+            <Principal Role="AspNetUsers">
               <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="AspNetUserLogin">
+            <Dependent Role="AspNetUserLogins">
               <PropertyRef Name="UserId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_QuestionCreator_User">
+          <End Role="AspNetUsers" Type="Self.AspNetUser" Multiplicity="1" />
+          <End Role="QuestionCreator" Type="Self.QuestionCreator" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="QuestionCreator">
+              <PropertyRef Name="UserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Question_Answer">
-          <End Type="BDictionaryModel.QuestionAnswer" Role="QuestionAnswer" Multiplicity="1" />
-          <End Type="BDictionaryModel.Question" Role="Question" Multiplicity="*" />
+          <End Role="QuestionAnswer" Type="Self.QuestionAnswer" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Question" Type="Self.Question" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="QuestionAnswer">
               <PropertyRef Name="Id" />
@@ -393,8 +577,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Question_QuestionCategory">
-          <End Type="BDictionaryModel.QuestionCategory" Role="QuestionCategory" Multiplicity="1" />
-          <End Type="BDictionaryModel.Question" Role="Question" Multiplicity="*" />
+          <End Role="QuestionCategory" Type="Self.QuestionCategory" Multiplicity="1" />
+          <End Role="Question" Type="Self.Question" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="QuestionCategory">
               <PropertyRef Name="Id" />
@@ -404,9 +588,25 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_QuestionCreator_Question">
+          <End Role="Question" Type="Self.Question" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="QuestionCreator" Type="Self.QuestionCreator" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Question">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="QuestionCreator">
+              <PropertyRef Name="QuestionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_QuestionAnswer_QuestionCategory">
-          <End Type="BDictionaryModel.QuestionCategory" Role="QuestionCategory" Multiplicity="1" />
-          <End Type="BDictionaryModel.QuestionAnswer" Role="QuestionAnswer" Multiplicity="*" />
+          <End Role="QuestionCategory" Type="Self.QuestionCategory" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="QuestionAnswer" Type="Self.QuestionAnswer" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="QuestionCategory">
               <PropertyRef Name="Id" />
@@ -417,8 +617,8 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_QuestionCategory_ParentQuestionCategory">
-          <End Type="BDictionaryModel.QuestionCategory" Role="QuestionCategory" Multiplicity="0..1" />
-          <End Type="BDictionaryModel.QuestionCategory" Role="QuestionCategory1" Multiplicity="*" />
+          <End Role="QuestionCategory" Type="Self.QuestionCategory" Multiplicity="0..1" />
+          <End Role="QuestionCategory1" Type="Self.QuestionCategory" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="QuestionCategory">
               <PropertyRef Name="Id" />
@@ -428,96 +628,253 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="AspNetUserRoles">
-          <End Type="BDictionaryModel.AspNetRole" Role="AspNetRole" Multiplicity="*" />
-          <End Type="BDictionaryModel.AspNetUser" Role="AspNetUser" Multiplicity="*" />
+        <Association Name="FK_Word_FirstSynonym">
+          <End Role="Word" Type="Self.Word" Multiplicity="1" />
+          <End Role="Synonym" Type="Self.Synonym" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Word">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Synonym">
+              <PropertyRef Name="FirstSynonymID" />
+            </Dependent>
+          </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Word_SecondSynonym">
+          <End Role="Word" Type="Self.Word" Multiplicity="1" />
+          <End Role="Synonym" Type="Self.Synonym" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Word">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Synonym">
+              <PropertyRef Name="SecondSynonymID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Word_WordType">
+          <End Role="WordType" Type="Self.WordType" Multiplicity="0..1" />
+          <End Role="Word" Type="Self.Word" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="WordType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Word">
+              <PropertyRef Name="TypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="AspNetUserRoles">
+          <End Role="AspNetRoles" Type="Self.AspNetRole" Multiplicity="*" />
+          <End Role="AspNetUsers" Type="Self.AspNetUser" Multiplicity="*" />
+        </Association>
+        <EntityContainer Name="BDictionaryEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="C__RefactorLog" EntityType="Self.C__RefactorLog" />
+          <EntitySet Name="AspNetRoles" EntityType="Self.AspNetRole" />
+          <EntitySet Name="AspNetUserClaims" EntityType="Self.AspNetUserClaim" />
+          <EntitySet Name="AspNetUserLogins" EntityType="Self.AspNetUserLogin" />
+          <EntitySet Name="AspNetUsers" EntityType="Self.AspNetUser" />
+          <EntitySet Name="Questions" EntityType="Self.Question" />
+          <EntitySet Name="QuestionAnswers" EntityType="Self.QuestionAnswer" />
+          <EntitySet Name="QuestionCategories" EntityType="Self.QuestionCategory" />
+          <EntitySet Name="QuestionCreators" EntityType="Self.QuestionCreator" />
+          <EntitySet Name="Regions" EntityType="Self.Region" />
+          <EntitySet Name="Synonyms" EntityType="Self.Synonym" />
+          <EntitySet Name="Words" EntityType="Self.Word" />
+          <EntitySet Name="WordTypes" EntityType="Self.WordType" />
+          <AssociationSet Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" Association="Self.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
+            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
+            <End Role="AspNetUserClaims" EntitySet="AspNetUserClaims" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" Association="Self.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId">
+            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
+            <End Role="AspNetUserLogins" EntitySet="AspNetUserLogins" />
+          </AssociationSet>
+          <AssociationSet Name="FK_QuestionCreator_User" Association="Self.FK_QuestionCreator_User">
+            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
+            <End Role="QuestionCreator" EntitySet="QuestionCreators" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Question_Answer" Association="Self.FK_Question_Answer">
+            <End Role="QuestionAnswer" EntitySet="QuestionAnswers" />
+            <End Role="Question" EntitySet="Questions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Question_QuestionCategory" Association="Self.FK_Question_QuestionCategory">
+            <End Role="QuestionCategory" EntitySet="QuestionCategories" />
+            <End Role="Question" EntitySet="Questions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_QuestionCreator_Question" Association="Self.FK_QuestionCreator_Question">
+            <End Role="Question" EntitySet="Questions" />
+            <End Role="QuestionCreator" EntitySet="QuestionCreators" />
+          </AssociationSet>
+          <AssociationSet Name="FK_QuestionAnswer_QuestionCategory" Association="Self.FK_QuestionAnswer_QuestionCategory">
+            <End Role="QuestionCategory" EntitySet="QuestionCategories" />
+            <End Role="QuestionAnswer" EntitySet="QuestionAnswers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_QuestionCategory_ParentQuestionCategory" Association="Self.FK_QuestionCategory_ParentQuestionCategory">
+            <End Role="QuestionCategory" EntitySet="QuestionCategories" />
+            <End Role="QuestionCategory1" EntitySet="QuestionCategories" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Word_FirstSynonym" Association="Self.FK_Word_FirstSynonym">
+            <End Role="Word" EntitySet="Words" />
+            <End Role="Synonym" EntitySet="Synonyms" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Word_SecondSynonym" Association="Self.FK_Word_SecondSynonym">
+            <End Role="Word" EntitySet="Words" />
+            <End Role="Synonym" EntitySet="Synonyms" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Word_WordType" Association="Self.FK_Word_WordType">
+            <End Role="WordType" EntitySet="WordTypes" />
+            <End Role="Word" EntitySet="Words" />
+          </AssociationSet>
+          <AssociationSet Name="AspNetUserRoles" Association="Self.AspNetUserRoles">
+            <End Role="AspNetRoles" EntitySet="AspNetRoles" />
+            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
+          </AssociationSet>
+        </EntityContainer>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="BDictionaryModelStoreContainer" CdmEntityContainer="BDictionaryEntities">
+          <EntitySetMapping Name="C__RefactorLog">
+            <EntityTypeMapping TypeName="BDictionaryModel.C__RefactorLog">
+              <MappingFragment StoreEntitySet="__RefactorLog">
+                <ScalarProperty Name="OperationKey" ColumnName="OperationKey" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="AspNetRoles">
             <EntityTypeMapping TypeName="BDictionaryModel.AspNetRole">
               <MappingFragment StoreEntitySet="AspNetRoles">
-                <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="AspNetUserClaims">
             <EntityTypeMapping TypeName="BDictionaryModel.AspNetUserClaim">
               <MappingFragment StoreEntitySet="AspNetUserClaims">
-                <ScalarProperty Name="ClaimValue" ColumnName="ClaimValue" />
-                <ScalarProperty Name="ClaimType" ColumnName="ClaimType" />
-                <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="ClaimType" ColumnName="ClaimType" />
+                <ScalarProperty Name="ClaimValue" ColumnName="ClaimValue" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="AspNetUserLogins">
             <EntityTypeMapping TypeName="BDictionaryModel.AspNetUserLogin">
               <MappingFragment StoreEntitySet="AspNetUserLogins">
-                <ScalarProperty Name="UserId" ColumnName="UserId" />
-                <ScalarProperty Name="ProviderKey" ColumnName="ProviderKey" />
                 <ScalarProperty Name="LoginProvider" ColumnName="LoginProvider" />
+                <ScalarProperty Name="ProviderKey" ColumnName="ProviderKey" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="AspNetUsers">
             <EntityTypeMapping TypeName="BDictionaryModel.AspNetUser">
               <MappingFragment StoreEntitySet="AspNetUsers">
-                <ScalarProperty Name="UserName" ColumnName="UserName" />
-                <ScalarProperty Name="AccessFailedCount" ColumnName="AccessFailedCount" />
-                <ScalarProperty Name="LockoutEnabled" ColumnName="LockoutEnabled" />
-                <ScalarProperty Name="LockoutEndDateUtc" ColumnName="LockoutEndDateUtc" />
-                <ScalarProperty Name="TwoFactorEnabled" ColumnName="TwoFactorEnabled" />
-                <ScalarProperty Name="PhoneNumberConfirmed" ColumnName="PhoneNumberConfirmed" />
-                <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
-                <ScalarProperty Name="SecurityStamp" ColumnName="SecurityStamp" />
-                <ScalarProperty Name="PasswordHash" ColumnName="PasswordHash" />
-                <ScalarProperty Name="EmailConfirmed" ColumnName="EmailConfirmed" />
-                <ScalarProperty Name="Email" ColumnName="Email" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="EmailConfirmed" ColumnName="EmailConfirmed" />
+                <ScalarProperty Name="PasswordHash" ColumnName="PasswordHash" />
+                <ScalarProperty Name="SecurityStamp" ColumnName="SecurityStamp" />
+                <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
+                <ScalarProperty Name="PhoneNumberConfirmed" ColumnName="PhoneNumberConfirmed" />
+                <ScalarProperty Name="TwoFactorEnabled" ColumnName="TwoFactorEnabled" />
+                <ScalarProperty Name="LockoutEndDateUtc" ColumnName="LockoutEndDateUtc" />
+                <ScalarProperty Name="LockoutEnabled" ColumnName="LockoutEnabled" />
+                <ScalarProperty Name="AccessFailedCount" ColumnName="AccessFailedCount" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Questions">
             <EntityTypeMapping TypeName="BDictionaryModel.Question">
               <MappingFragment StoreEntitySet="Question">
-                <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
-                <ScalarProperty Name="AnswerID" ColumnName="AnswerID" />
-                <ScalarProperty Name="Value" ColumnName="Value" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="AnswerID" ColumnName="AnswerID" />
+                <ScalarProperty Name="IsShiz" ColumnName="IsShiz" />
+                <ScalarProperty Name="Creator" ColumnName="Creator" />
+                <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
+                <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="QuestionAnswers">
             <EntityTypeMapping TypeName="BDictionaryModel.QuestionAnswer">
               <MappingFragment StoreEntitySet="QuestionAnswer">
-                <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
-                <ScalarProperty Name="Value" ColumnName="Value" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="CategoryID" ColumnName="CategoryID" />
+                <ScalarProperty Name="IsPrimary" ColumnName="IsPrimary" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="QuestionCategories">
             <EntityTypeMapping TypeName="BDictionaryModel.QuestionCategory">
               <MappingFragment StoreEntitySet="QuestionCategory">
-                <ScalarProperty Name="ParentID" ColumnName="ParentID" />
-                <ScalarProperty Name="AnswerType" ColumnName="AnswerType" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="AnswerType" ColumnName="AnswerType" />
+                <ScalarProperty Name="ParentID" ColumnName="ParentID" />
+                <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="QuestionCreators">
+            <EntityTypeMapping TypeName="BDictionaryModel.QuestionCreator">
+              <MappingFragment StoreEntitySet="QuestionCreator">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="QuestionID" ColumnName="QuestionID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Regions">
+            <EntityTypeMapping TypeName="BDictionaryModel.Region">
+              <MappingFragment StoreEntitySet="Region">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Synonyms">
+            <EntityTypeMapping TypeName="BDictionaryModel.Synonym">
+              <MappingFragment StoreEntitySet="Synonym">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="FirstSynonymID" ColumnName="FirstSynonymID" />
+                <ScalarProperty Name="SecondSynonymID" ColumnName="SecondSynonymID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Words">
+            <EntityTypeMapping TypeName="BDictionaryModel.Word">
+              <MappingFragment StoreEntitySet="Word">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Example" ColumnName="Example" />
+                <ScalarProperty Name="TypeID" ColumnName="TypeID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="WordTypes">
+            <EntityTypeMapping TypeName="BDictionaryModel.WordType">
+              <MappingFragment StoreEntitySet="WordType">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <AssociationSetMapping Name="AspNetUserRoles" TypeName="BDictionaryModel.AspNetUserRoles" StoreEntitySet="AspNetUserRoles">
-            <EndProperty Name="AspNetUser">
-              <ScalarProperty Name="Id" ColumnName="UserId" />
-            </EndProperty>
-            <EndProperty Name="AspNetRole">
+            <EndProperty Name="AspNetRoles">
               <ScalarProperty Name="Id" ColumnName="RoleId" />
+            </EndProperty>
+            <EndProperty Name="AspNetUsers">
+              <ScalarProperty Name="Id" ColumnName="UserId" />
             </EndProperty>
           </AssociationSetMapping>
         </EntityContainerMapping>

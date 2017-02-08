@@ -13,8 +13,12 @@ namespace BDictionary.Business
         QuestionCategory GetQuestionCategory(string categoryName);
         IEnumerable<QuestionCategory> Search(string input);
         void AddOrUpdate(QuestionCategory category);
+        void RemoveCategory(int categoryId);
+
         IEnumerable<QuestionAnswer> GetAnswers(int categoryId);
+        bool IsPrimaryAnswer(int answerId);
         IEnumerable<Question> GetQuestions(int categoryId);
+        
         dynamic[] BuildTree(List<QuestionCategory> categories);
         dynamic[] BuildTreeForSelectedItem(int selectedCategoryId, List<int> parents, List<QuestionCategory> categories);
         object BuildNode(QuestionCategory category, bool isOpened = false, bool isSelected = false, dynamic[] children = null);

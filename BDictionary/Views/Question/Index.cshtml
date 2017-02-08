@@ -1,0 +1,105 @@
+﻿@using BDictionary.BDictionary.UI.Models.Questions
+@using PagedList
+@using PagedList.Mvc
+@model QuestionPagedListViewModel
+
+<h2>Питањата</h2>
+@using (Html.BeginForm("Index", Model.ItemController + "List", FormMethod.Get))
+{
+    <div class="display-inline-block">
+        <div class="listing-page-search-container">
+            @Html.TextBox("SearchString", (string)ViewBag.CurrentFilter, new { @class = "form-control display-inline left" })
+            <a href="@(Url.Action("Index", Model.ItemController ))" class="btn btn-success left" id="applaySearch">
+                <span class="glyphicon glyphicon glyphicon-search"></span>
+            </a>
+            @*<a href="@(Url.Action("Index", Model.ItemController ))" class="btn btn-primary left" id="newQustion">
+                <span class="glyphicon glyphicon-plus"></span>
+            </a>*@
+        </div>
+        @*<div class="listing-page-filters-container">
+            @if (Model.Venues != null)
+            {
+                <div class="paged-list-selector-container">
+                    <span class="left">Venue: </span>
+                    @{
+                        var venueSelectItems = new SelectList(Model.Venues, selectedValue: Model.VenueSelected);
+                        @Html.DropDownList("venueSelected", venueSelectItems, new { @id = "VenuesList", @name = "VenuesList", @class = "form-control" });
+                    }
+                </div>
+            }
+        </div>*@
+    </div>
+}
+<div class="form-group display-inline-block">
+    <div class="items-per-page form-group right">
+        <b>Display</b>
+        @{
+            var selectItems = new SelectList(new List<int> { 10, 25, 50 }, selectedValue: Model.PageSize);
+            @Html.DropDownList("ItemsPerPage", selectItems, new { @id = "ItemsPerPageList", @name = "ItemsPerPageList", @class = "form-control" });
+        }
+        <b>per page</b>
+    </div>
+</div>
+@if (Model != null)
+{
+    <table class="table paged-list-table">
+        <tr>
+            <th>
+                @Html.ActionLink("Услов", "Index", new { sortOrder = ViewBag.ValueSortParm, currentFilter = ViewBag.CurrentFilter, pageSize = ViewBag.CurrentItemsPerPage, })
+            </th>
+            <th>
+                @Html.ActionLink("Одговор", "Index", new { sortOrder = ViewBag.AnswerSortParm, currentFilter = ViewBag.CurrentFilter, pageSize = ViewBag.CurrentItemsPerPage, })
+            </th>
+            <th>
+                @Html.ActionLink("Категорија", "Index", new { sortOrder = ViewBag.CategorySortParm, currentFilter = ViewBag.CurrentFilter, pageSize = ViewBag.CurrentItemsPerPage, })
+            </th>
+            <th>
+                @Html.ActionLink("Шиз", "Index", new { sortOrder = ViewBag.ShizSortParm, currentFilter = ViewBag.CurrentFilter, pageSize = ViewBag.CurrentItemsPerPage, })
+            </th>
+            <th></th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model.ListEntries)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Value)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Answer)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Category)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IsShiz)
+                </td>
+                <td class="listing-page-view-btn">
+                    @Html.ActionLink("Edit", "Edit", Model.ItemController, new { id = item.Id, returnUrl = Request.Url.ToString() }, new { @class = "btn btn-primary" })
+                </td>
+                <td class="listing-page-view-btn">
+                    @Html.ActionLink("Delete", "Delete", Model.ItemController, new { id = item.Id, returnUrl = Request.Url.ToString() }, new { @class = "btn btn-primary" })
+                </td>
+            </tr>
+        }
+        <tr><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+    </table>
+
+    <p>Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount</p>
+
+    @Html.PagedListPager((IPagedList)Model, page => Url.Action("Index", new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter, pageSize = ViewBag.CurrentItemsPerPage }))
+}
+else
+{
+    <p class="display-inline-block">There are no catalogs in database.</p>
+}
+
+@using (Html.BeginScripts())
+{
+    <script src="/Scripts/Custom/Question.js"></script>
+    <script>
+        var q = new InventoryStaiton.Question();
+        q.init();
+    </script>
+}

@@ -11,3 +11,4 @@ Post-Deployment Script Template
 */
 
 :r .\IdentityData.sql
+:r .\RegionData.sql

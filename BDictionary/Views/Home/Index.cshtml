@@ -2,30 +2,100 @@
     ViewBag.Title = "Home Page";
 }
 
-<div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-    <p><a href="http://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+<div class="row map-section-container">
+    <div class="region-description">
+        <div class="region-description-header">
+            Radicevci
+        </div>
+        <div class="region-description-content">
+
+        </div>
+    </div>
+    <div id="map"></div>
 </div>
 
-<div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>
-            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
-        </p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-    </div>
-</div>
+<script>
+    function initMap() {
+        var mapDiv = document.getElementById('map');
+        var map = new google.maps.Map(mapDiv, {
+            scrollwheel: false,
+            navigationControl: false,
+            mapTypeControl: false,
+            scaleControl: false,
+            draggable: false,
+            disableDoubleClickZoom: true,
+            //42.4719796,22.393542,11
+            center: { lat: 42.455, lng: 22.375 },
+            zoom: 11,
+            mapTypeId: "none"
+        });
+
+        map.data.loadGeoJson('/Content/Gis/geojson_id.json');
+
+        map.data.setStyle(function (feature) {
+            var color = '#aaaaff';
+            var strokeColor = '#3322bb';
+            return /* type {google.maps.Data.StyleOptions} */({
+                fillColor: color,
+                strokeColor: strokeColor,
+                strokeWeight: 1
+            });
+        });
+
+        map.data.addListener('click', function (event) {
+            map.data.revertStyle();
+            //if (event.feature.getProperty('isColorful')) {
+                //event.feature.setProperty('isColorful', false);
+                //map.data.overrideStyle(event.feature, { fillColor: '#aaaaff' });
+            //}
+            //else {
+            //    event.feature.setProperty('isColorful', true);
+            map.data.overrideStyle(event.feature, { fillColor: '#1100cc' });
+            expandDetails(event.feature.getProperty('Id'));
+            //}
+            //alert(event.feature.getProperty('isColorful'));
+        });
+
+        map.data.addListener('mouseover', function (event) {
+            //map.data.revertStyle();
+            map.data.overrideStyle(event.feature, { strokeWeight: 3 });
+        });
+
+        map.data.addListener('mouseout', function (event) {
+            //map.data.revertStyle();
+            map.data.overrideStyle(event.feature, { strokeWeight: 1 });
+        });
+    }
+
+    function expandDetails(regionID) {
+        $.ajax({
+            type: "GET",
+            url: "/Home/RegionDetails",
+            data: { id: regionID },
+            success: function (data) {
+                $('.region-description-header').text(data.regionName);
+                $('.region-description-content').text(data.description);
+            },
+            failure: function (errMsg) {
+                alert(errMsg);
+            }
+        });
+
+
+        $(".region-description").animate({
+            width: "400px",
+            opacity: 1
+        }, 800, function () {
+            // Animation complete.
+        });
+
+        $("#map").animate({
+            float: "right !important",
+            marginRight: "50px"
+        }, 800, function () {
+            // Animation complete.
+        });
+    };
+
+</script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBw6Zj2-Xjx-j0gwCzKYePyDP9ZYLGKZzg&callback=initMap"></script>

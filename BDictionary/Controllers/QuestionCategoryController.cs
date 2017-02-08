@@ -2,6 +2,7 @@
 using BDictionary.Business;
 using BDictionary.Domain;
 using BDictionary.UI.Models.Categories;
+using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,16 +30,16 @@ namespace BDictionary.UI.Controllers
         #region Action Methods
         public ActionResult Index(int? id)
         {
+            QuestionCategory category = new QuestionCategory();
             QuestionCategoriesViewModelContainer model = new QuestionCategoriesViewModelContainer();
             if(id.HasValue)
             {
-                QuestionCategory category = _categoryService.GetQuestionCategory(id.Value);
-                model = MapCategoryToCategoryViewModel(category);
+                category = _categoryService.GetQuestionCategory(id.Value);
             }
 
+            model = MapCategoryToCategoryViewModel(category);
             return View(model);
         }
-
         [HttpPost]
         public ActionResult Index(QuestionCategoriesViewModelContainer model)
         {
@@ -50,7 +51,7 @@ namespace BDictionary.UI.Controllers
         public ActionResult AddOrUpdate(QuestionCategoriesViewModelContainer categoryModel)
         {
             int parentCategory = 0;
-            if(String.IsNullOrEmpty(categoryModel.QuestionCategoryViewModel.Parent))
+            if(!String.IsNullOrEmpty(categoryModel.QuestionCategoryViewModel.Parent))
             {
                 parentCategory = _categoryService.GetQuestionCategory(categoryModel.QuestionCategoryViewModel.Parent).Id;
             }
@@ -64,14 +65,23 @@ namespace BDictionary.UI.Controllers
             };
 
             List<QuestionAnswer> questionAnswers = new List<QuestionAnswer>();
-            foreach(QuestionAnswerViewModel model in categoryModel.QuestionAnswerViewModel)
+            foreach (QuestionAnswerViewModel model in categoryModel.QuestionAnswerViewModel)
             {
                 questionAnswers.Add(_mapper.Map<QuestionAnswer>(model));
             }
 
-            category.QuestionAnswers = questionAnswers;
-            _categoryService.AddOrUpdate(category);
+            List<Question> questions = new List<Question>();
+            foreach (QuestionViewModel model in categoryModel.QuestionViewModel)
+            {
+                Question question = _mapper.Map<Question>(model);
+                question.QuestionAnswer = new QuestionAnswer() { Value = model.Answer };
+                questions.Add(question);
+            }
 
+            category.QuestionAnswers = questionAnswers;
+            category.Questions = questions;
+
+            _categoryService.AddOrUpdate(category);
             return RedirectToAction("Index", categoryModel);
         }
 
@@ -93,7 +103,6 @@ namespace BDictionary.UI.Controllers
                 return Json(result, JsonRequestBehavior.AllowGet);
             }
         }
-
         [Authorize]
         public JsonResult GetLeafCategories(string input)
         {
@@ -110,43 +119,170 @@ namespace BDictionary.UI.Controllers
         }
 
         [Authorize]
+        public ActionResult SelectCategory(QuestionCategoriesViewModelContainer model)
+        {
+            if(model.SelectedCategoryId != 0)
+            {
+                model.SelectedCategoryName = _categoryService.GetQuestionCategory(model.SelectedCategoryId).Name;
+            }
+
+            var answersList = model.QuestionAnswerViewModel.Select(qa => qa.Value).ToList();
+            model.QuestionHelperViewModel.Answers = answersList;
+            string defaultAnswer = "Select answer";
+            List<string> answers = new List<string>() { defaultAnswer };
+            answers.AddRange(answersList);
+            model.QuestionHelperViewModel.Answers = answers;
+
+            ModelState.Clear();
+            return View("Index", model);
+        }
+        [Authorize]
+        public ActionResult EditCategory(QuestionCategoriesViewModelContainer model)
+        {
+            if (model.SelectedCategoryId != 0)
+            {
+                return RedirectToAction("Index", new { Id = model.SelectedCategoryId });
+            }
+            
+            var answersList = model.QuestionAnswerViewModel.Select(qa => qa.Value).ToList();
+            model.QuestionHelperViewModel.Answers = answersList;
+            string defaultAnswer = "Select answer";
+            List<string> answers = new List<string>() { defaultAnswer };
+            answers.AddRange(answersList);
+            model.QuestionHelperViewModel.Answers = answers;
+
+            ModelState.Clear();
+            return View("Index", model);
+        }
+        [Authorize]
+        public ActionResult RemoveCategory(QuestionCategoriesViewModelContainer model)
+        {
+            if (model.SelectedCategoryId != 0)
+            {
+                _categoryService.RemoveCategory(model.SelectedCategoryId);
+            }
+
+            var answersList = model.QuestionAnswerViewModel.Select(qa => qa.Value).ToList();
+            model.QuestionHelperViewModel.Answers = answersList;
+            string defaultAnswer = "Select answer";
+            List<string> answers = new List<string>() { defaultAnswer };
+            answers.AddRange(answersList);
+            model.QuestionHelperViewModel.Answers = answers;
+
+            ModelState.Clear();
+            return View("Index", model);
+        }
+
+        [Authorize]
         public ActionResult AddQuestionAnswer(QuestionCategoriesViewModelContainer model)
         {
-            if(!String.IsNullOrEmpty(model.QuestionAnswerHelper.AnswerToAdd))
+            if(!String.IsNullOrEmpty(model.QuestionAnswerHelperViewModel.AnswerToAdd))
             {
                 QuestionAnswerViewModel answerModel = new QuestionAnswerViewModel()
                 {
                     CategoryID = model.QuestionCategoryViewModel.Id,
-                    Value = model.QuestionAnswerHelper.AnswerToAdd,
+                    Value = model.QuestionAnswerHelperViewModel.AnswerToAdd,
                     IsPrimary = false
                 };
 
                 model.QuestionAnswerViewModel.Add(answerModel);
             }
-            model.QuestionAnswerHelper.AnswerToAdd = "";
-            model.QuestionAnswerHelper.AnswerToRemove = "";
+            model.QuestionAnswerHelperViewModel.AnswerToAdd = "";
+            model.QuestionAnswerHelperViewModel.AnswerToRemove = "";
+
+            var answersList = model.QuestionAnswerViewModel.Select(qa => qa.Value).ToList();
+            model.QuestionHelperViewModel.Answers = answersList;
+
+            string defaultAnswer = "Select answer";
+            List<string> answers = new List<string>() { defaultAnswer };
+            answers.AddRange(answersList);
+            model.QuestionHelperViewModel.Answers = answers;
+
+            ModelState.Clear();
+            return View("Index", model);
+        }
+        [Authorize]
+        public ActionResult RemoveQuestionAnswer(QuestionCategoriesViewModelContainer model)
+        {
+            if (!String.IsNullOrEmpty(model.QuestionAnswerHelperViewModel.AnswerToRemove))
+            {
+                QuestionAnswerViewModel existingAnswer = model.QuestionAnswerViewModel.Where(qa => qa.Value == model.QuestionAnswerHelperViewModel.AnswerToRemove.Trim()).FirstOrDefault();
+                if (existingAnswer != null)
+                    model.QuestionAnswerViewModel.Remove(existingAnswer);
+            }
+            model.QuestionAnswerHelperViewModel.AnswerToAdd = "";
+            model.QuestionAnswerHelperViewModel.AnswerToRemove = "";
+            var answersList = model.QuestionAnswerViewModel.Select(qa => qa.Value).ToList();
+            model.QuestionHelperViewModel.Answers = answersList;
+
+            string defaultAnswer = "Select answer";
+            List<string> answers = new List<string>() { defaultAnswer };
+            answers.AddRange(answersList);
+            model.QuestionHelperViewModel.Answers = answers;
+
             ModelState.Clear();
             return View("Index", model);
         }
 
-
         [Authorize]
-        public ActionResult RemoveQuestionAnswer(QuestionCategoriesViewModelContainer model)
+        public ActionResult AddQuestion(QuestionCategoriesViewModelContainer model)
         {
-            if (!String.IsNullOrEmpty(model.QuestionAnswerHelper.AnswerToRemove))
+            if (!String.IsNullOrEmpty(model.QuestionHelperViewModel.QuestionToAdd))
             {
-                QuestionAnswerViewModel existingAnswer = model.QuestionAnswerViewModel.Where(qa => qa.Value == model.QuestionAnswerHelper.AnswerToRemove.Trim()).FirstOrDefault();
-                if (existingAnswer != null)
-                    model.QuestionAnswerViewModel.Remove(existingAnswer);
+                QuestionViewModel Model = new QuestionViewModel()
+                {
+                    CategoryID = model.QuestionCategoryViewModel.Id,
+                    Value = model.QuestionHelperViewModel.QuestionToAdd,
+                    Answer = model.QuestionHelperViewModel.SelectedAnswer,
+                    IsShiz = model.QuestionHelperViewModel.IsShiz,
+                    Creator = User.Identity.GetUserId()
+                };
+
+                model.QuestionViewModel.Add(Model);
+                model.QuestionAnswerViewModel.Where(qa => qa.Value == model.QuestionHelperViewModel.SelectedAnswer).FirstOrDefault().IsPrimary = true;
             }
-            model.QuestionAnswerHelper.AnswerToAdd = "";
-            model.QuestionAnswerHelper.AnswerToRemove = "";
+            model.QuestionHelperViewModel.QuestionToAdd = "";
+            model.QuestionHelperViewModel.QuestionToRemove = "";
+
+            var answersList = model.QuestionAnswerViewModel.Select(qa => qa.Value).ToList();
+            string defaultAnswer = "Select answer";
+            List<string> answers = new List<string>() { defaultAnswer };
+            answers.AddRange(answersList);
+            model.QuestionHelperViewModel.SelectedAnswer = defaultAnswer;
+            model.QuestionHelperViewModel.Answers = answers;
+
+            ModelState.Clear();
+            return View("Index", model);
+        }
+        [Authorize]
+        public ActionResult RemoveQuestion(QuestionCategoriesViewModelContainer model)
+        {
+            if (!String.IsNullOrEmpty(model.QuestionHelperViewModel.QuestionToRemove))
+            {
+                QuestionViewModel existing = model.QuestionViewModel.Where(qa => qa.Value == model.QuestionHelperViewModel.QuestionToRemove.Trim()).FirstOrDefault();
+                if (existing != null)
+                {
+                    var answer = model.QuestionAnswerViewModel.Where(qa => qa.Value == existing.Answer).FirstOrDefault();
+                    answer.IsPrimary = model.QuestionViewModel.Any(q => q.Answer == answer.Value);
+
+                    model.QuestionViewModel.Remove(existing);
+                }
+            }
+            model.QuestionHelperViewModel.QuestionToAdd = "";
+            model.QuestionHelperViewModel.QuestionToRemove = "";
+
+            var answersList = model.QuestionAnswerViewModel.Select(qa => qa.Value).ToList();
+            string defaultAnswer = "Select answer";
+            List<string> answers = new List<string>() { defaultAnswer };
+            answers.AddRange(answersList);
+            model.QuestionHelperViewModel.SelectedAnswer = defaultAnswer;
+            model.QuestionHelperViewModel.Answers = answers;
+
             ModelState.Clear();
             return View("Index", model);
         }
 
         #endregion
-
 
         #region HelperMethods
 
@@ -166,22 +302,38 @@ namespace BDictionary.UI.Controllers
         private QuestionCategoriesViewModelContainer MapCategoryToCategoryViewModel(QuestionCategory category)
         {
             QuestionCategoriesViewModelContainer model = new QuestionCategoriesViewModelContainer();
-            if (category != null)
+
+            model.QuestionCategoryViewModel = _mapper.Map<QuestionCategoryViewModel>(category);
+
+
+            if(category.Id != 0)
             {
-                model.QuestionCategoryViewModel = _mapper.Map<QuestionCategoryViewModel>(category);
                 foreach (QuestionAnswer answer in _categoryService.GetAnswers(category.Id).ToList())
                 {
                     QuestionAnswerViewModel answerModel = _mapper.Map<QuestionAnswerViewModel>(answer);
-                    answerModel.IsPrimary = answer.Questions.Any();
+                    answerModel.IsPrimary = _categoryService.IsPrimaryAnswer(answer.Id);
                     model.QuestionAnswerViewModel.Add(answerModel);
                 }
+                foreach (Question question in _categoryService.GetQuestions(category.Id).ToList())
+                {
+                    QuestionViewModel questionModel = _mapper.Map<QuestionViewModel>(question);
+                    questionModel.Answer = question.QuestionAnswer.Value;
+                    model.QuestionViewModel.Add(questionModel);
+                }
             }
+
+            string defaultAnswer = "Select answer";
+            List<string> answers = new List<string>() { defaultAnswer };
+            answers.AddRange(model.QuestionAnswerViewModel.Select(qa => qa.Value).ToList());
+            model.QuestionHelperViewModel.Answers = answers;
+            model.QuestionHelperViewModel.SelectedAnswer = defaultAnswer;
+
+            model.SelectedCategoryId = 0;
+            model.SelectedCategoryName = "";
 
             return model;
         }
 
         #endregion
-
-
     }
 }

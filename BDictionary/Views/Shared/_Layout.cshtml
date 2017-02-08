@@ -25,12 +25,15 @@
                 <ul class="nav navbar-nav">
                     @if (HttpContext.Current.User.IsInRole("Admin"))
                     {
-                        <li>@Html.ActionLink("Home", "Index", "Home")</li>
-                        <li>@Html.ActionLink("Contact", "Contact", "Admin")</li>
+                        <li>@Html.ActionLink("Домашна", "Index", "Home")</li>
+                        <li>@Html.ActionLink("Речник", "Index", "Dictionary")</li>
+                        <li>@Html.ActionLink("Квиз", "Index", "Quiz")</li>
+                        <li>@Html.ActionLink("Инфо", "Info", "Home")</li>
                         <li class="admin-nav-separator"></li>
-                        <li>@Html.ActionLink("Categories", "Index", "QuestionCategory")</li>
-                        <li>@Html.ActionLink("Questions", "Index", "Questions")</li>
-                        <li>@Html.ActionLink("Words", "Index", "Words")</li>
+                        <li>@Html.ActionLink("Kaтегорији", "Index", "QuestionCategory")</li>
+                        <li>@Html.ActionLink("Питања", "Index", "Question")</li>
+                        <li>@Html.ActionLink("Думи", "Index", "Word")</li>
+                        <li>@Html.ActionLink("Региони", "Index", "Region")</li>
                         <li class="admin-nav-separator"></li>
                         <li class="admin-action">@Html.ActionLink("Users Management", "Index", "UsersAdmin")</li>
                     }
